@@ -26,6 +26,7 @@ INSTALLED_APPS = [
     'backend.core',
     'backend.crm',
     'backend.project',
+    'backend.task',
 ]
 
 MIDDLEWARE = [

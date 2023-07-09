@@ -1,4 +1,13 @@
+import uuid
+
 from django.db import models
+
+
+class UuidModel(models.Model):
+    slug = models.UUIDField(unique=True, editable=False, default=uuid.uuid4)
+
+    class Meta:
+        abstract = True
 
 
 class TimeStampedModel(models.Model):
