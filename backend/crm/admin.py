@@ -7,3 +7,4 @@ from .models import Customer
 class CustomerAdmin(admin.ModelAdmin):
     list_display = ('__str__',)
     search_fields = ('name',)
+    list_filter = ('active',)

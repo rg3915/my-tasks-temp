@@ -49,6 +49,10 @@ class Issue(TimeStampedModel, UuidModel):
     number = models.PositiveIntegerField()
     title = models.CharField(max_length=255)
     description = models.TextField(null=True, blank=True)
+    project = models.ForeignKey(
+        Project,
+        on_delete=models.CASCADE,
+    )
     labels = models.ManyToManyField(Label, blank=True)
     milestone = models.ForeignKey(
         Milestone,
@@ -84,8 +88,8 @@ class Task(TimeStampedModel, UuidModel):
     status = models.CharField(max_length=2, choices=STATUS, default='o')
     annotation = models.TextField(null=True, blank=True)
     report = models.TextField(null=True, blank=True)
-    start_time = models.DateTimeField(null=True, blank=True)
-    end_time = models.DateTimeField(null=True, blank=True)
+    start_time = models.TimeField(null=True, blank=True)
+    end_time = models.TimeField(null=True, blank=True)
     estimate = models.DecimalField(max_digits=7, decimal_places=2, null=True, blank=True)
 
     class Meta:

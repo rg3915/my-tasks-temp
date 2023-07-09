@@ -7,4 +7,4 @@ from .models import Project
 class ProjectAdmin(admin.ModelAdmin):
     list_display = ('__str__', 'customer', 'repository_name')
     search_fields = ('title', 'customer__name', 'repository_name')
-    list_filter = ('customer',)
+    list_filter = ('active', 'customer')

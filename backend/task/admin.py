@@ -23,11 +23,15 @@ class MilestoneAdmin(admin.ModelAdmin):
 
 @admin.register(Issue)
 class IssueAdmin(admin.ModelAdmin):
-    list_display = ('__str__', 'milestone', 'status')
+    list_display = ('__str__', 'project', 'get_labels', 'milestone', 'status')
     readonly_fields = ('slug',)
     search_fields = ('title',)
-    list_filter = ('status', 'labels', 'milestone')
+    list_filter = ('status', 'project', 'labels', 'milestone')
     date_hierarchy = 'created'
+
+    @admin.display(description='labels')
+    def get_labels(self, obj):
+        return ','.join(obj.labels.values_list('label', flat=True))
 
 
 @admin.register(Task)
