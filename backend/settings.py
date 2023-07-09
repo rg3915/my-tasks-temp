@@ -21,8 +21,11 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # others apps
     'django_extensions',
+    'dr_scaffold',
     # my apps
-    'backend.core'
+    'backend.core',
+    'backend.crm',
+    'backend.project',
 ]
 
 MIDDLEWARE = [
