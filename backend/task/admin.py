@@ -21,8 +21,14 @@ class MilestoneAdmin(admin.ModelAdmin):
     search_fields = ('title',)
 
 
+class IssueInline(admin.TabularInline):
+    model = Issue
+    extra = 0
+
+
 @admin.register(Sprint)
 class SprintAdmin(admin.ModelAdmin):
+    inlines = (IssueInline,)
     list_display = ('__str__', 'project')
     search_fields = ('title',)
     list_filter = ('project',)

@@ -1,5 +1,5 @@
 import warnings
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 from random import choice, randint
 
 from django.core.management.base import BaseCommand
@@ -14,8 +14,9 @@ from backend.core.utils import (
     progressbar
 )
 from backend.crm.models import Customer
+from backend.financial.models import Payment
 from backend.project.models import Project
-from backend.task.models import Issue, Label, Milestone, Tag, Task
+from backend.task.models import Issue, Label, Milestone, Sprint, Tag, Task
 
 fake = Faker()
 
@@ -60,24 +61,34 @@ def create_milestones():
         Milestone.objects.get_or_create(title=title)
 
 
+def create_sprints():
+    projects = Project.objects.all()
+    for project in progressbar(projects, 'Sprints'):
+        Sprint.objects.create(
+            title=gen_title(),
+            project=project,
+        )
+
+
 def create_issues():
     labels = Label.objects.all()
-    projects = Project.objects.all()
+    sprints = Sprint.objects.all()
     milestones = Milestone.objects.all()
 
-    for issue in progressbar(range(1, 20), 'Issues'):
-        data = dict(
-            number=randint(1, 100),
-            title=gen_title(),
-            description=gen_phrase(),
-            project=choice(projects),
-            milestone=choice(milestones),
-            status=choice(STATUS)
-        )
-        obj = Issue.objects.create(**data)
+    for sprint in progressbar(sprints, 'Issues'):
+        for _ in range(1, 3):
+            data = dict(
+                number=randint(1, 100),
+                title=gen_title(),
+                description=gen_phrase(),
+                milestone=choice(milestones),
+                sprint=choice(sprints),
+                status=choice(STATUS)
+            )
+            obj = Issue.objects.create(**data)
 
-        for _ in range(1, 5):
-            obj.labels.add(choice(labels))
+            for _ in range(1, 5):
+                obj.labels.add(choice(labels))
 
 
 def get_end_time(_start_time):
@@ -113,16 +124,37 @@ def create_tasks():
         obj.tags.add(choice(tags))
 
 
+def create_payments():
+    sprints = Sprint.objects.all()
+
+    for sprint in progressbar(sprints, 'Payments'):
+        estimated_time = randint(1, 40)
+        estimated_value = estimated_time * randint(50, 150)
+        hours = timedelta(hours=estimated_time)
+        data = dict(
+            number=1,
+            estimated_time=estimated_time,
+            estimated_value=estimated_value,
+            value=estimated_value,
+            hours=hours,
+            payment_date=date.today(),
+            sprint=sprint,
+        )
+        Payment.objects.create(**data)
+
+
 class Command(BaseCommand):
     help = "Create data."
 
     def handle(self, *args, **options):
-        Issue.objects.all().delete()
+        Customer.objects.all().delete()
 
         create_customers()
         create_projects()
         create_tags()
         create_labels()
         create_milestones()
+        create_sprints()
         create_issues()
         create_tasks()
+        create_payments()
