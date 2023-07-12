@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Issue, Label, Milestone, Tag, Task
+from .models import Issue, Label, Milestone, Sprint, Tag, Task
 
 
 @admin.register(Tag)
@@ -21,12 +21,19 @@ class MilestoneAdmin(admin.ModelAdmin):
     search_fields = ('title',)
 
 
+@admin.register(Sprint)
+class SprintAdmin(admin.ModelAdmin):
+    list_display = ('__str__', 'project')
+    search_fields = ('title',)
+    list_filter = ('project',)
+
+
 @admin.register(Issue)
 class IssueAdmin(admin.ModelAdmin):
-    list_display = ('__str__', 'project', 'get_labels', 'milestone', 'status')
+    list_display = ('__str__', 'get_labels', 'milestone', 'sprint', 'status')
     readonly_fields = ('slug',)
     search_fields = ('title',)
-    list_filter = ('status', 'project', 'labels', 'milestone')
+    list_filter = ('status', 'labels', 'milestone')
     date_hierarchy = 'created'
 
     @admin.display(description='labels')

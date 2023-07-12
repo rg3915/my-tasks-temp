@@ -25,6 +25,7 @@ INSTALLED_APPS = [
     # my apps
     'backend.core',
     'backend.crm',
+    'backend.financial',
     'backend.project',
     'backend.task',
 ]
