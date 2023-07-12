@@ -7,7 +7,7 @@ from .models import Customer
 
 router = Router()
 
-CustomerSchema = create_schema(Customer)
+CustomerSchema = create_schema(Customer, depth=1)
 
 
 @router.get('customer/', response=List[CustomerSchema])
