@@ -60,6 +60,12 @@ class Sprint(UuidModel, TimeStampedModel):
     def __str__(self):
         return f'{self.title}'
 
+    def get_issues(self):
+        return self.issue_set.all()
+
+    def get_payments(self):
+        return self.payment_set.all()
+
 
 class Issue(TimeStampedModel, UuidModel):
     number = models.PositiveIntegerField()
@@ -85,6 +91,9 @@ class Issue(TimeStampedModel, UuidModel):
 
     def __str__(self):
         return f'{self.number} - {self.title}'
+
+    def get_labels(self):
+        return self.labels.all()
 
 
 class Task(TimeStampedModel, UuidModel):
@@ -114,3 +123,6 @@ class Task(TimeStampedModel, UuidModel):
 
     def __str__(self):
         return f'{self.title}'
+
+    def get_tags(self):
+        return self.tags.all()

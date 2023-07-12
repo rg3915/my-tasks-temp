@@ -13,3 +13,6 @@ class Customer(Active):
 
     def __str__(self):
         return f'{self.name}'
+
+    def get_projects(self):
+        return self.projects.all()

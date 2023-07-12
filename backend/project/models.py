@@ -22,3 +22,15 @@ class Project(TimeStampedModel, Active):
 
     def __str__(self):
         return f'{self.title}'
+
+    def get_payments(self):
+        return [sprint.get_payments() for sprint in self.get_sprints()]
+
+    def get_sprints(self):
+        return self.sprints.all()
+
+    def get_issues(self):
+        return [sprint.get_issues() for sprint in self.get_sprints()]
+
+    def get_tasks(self):
+        return self.task_set.all()
