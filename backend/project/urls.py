@@ -1,11 +1,13 @@
 from django.urls import include, path
-from project.views import ProjectViewSet
-from rest_framework import routers
 
-router = routers.DefaultRouter()
+from backend.project import views as v
 
-router.register(r'projects', ProjectViewSet)
+app_name = 'project'
+
+project_patterns = [
+    path('', v.project_list, name='project_list'),
+]
 
 urlpatterns = [
-    path("", include(router.urls)),
+    path('', include(project_patterns)),
 ]

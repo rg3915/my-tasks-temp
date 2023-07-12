@@ -1,11 +1,13 @@
-from crm.views import CustomerViewSet
 from django.urls import include, path
-from rest_framework import routers
 
-router = routers.DefaultRouter()
+from backend.crm import views as v
 
-router.register(r'customers', CustomerViewSet)
+app_name = 'crm'
+
+customer_patterns = [
+    path('', v.customer_list, name='customer_list'),
+]
 
 urlpatterns = [
-    path("", include(router.urls)),
+    path('', include(customer_patterns)),
 ]

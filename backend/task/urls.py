@@ -1,21 +1,23 @@
 from django.urls import include, path
-from rest_framework import routers
-from task.views import (
-    IssueViewSet,
-    LabelViewSet,
-    MilestoneViewSet,
-    TagViewSet,
-    TaskViewSet
-)
 
-router = routers.DefaultRouter()
+from backend.task import views as v
 
-router.register(r'tags', TagViewSet)
-router.register(r'labels', LabelViewSet)
-router.register(r'milestones', MilestoneViewSet)
-router.register(r'issues', IssueViewSet)
-router.register(r'tasks', TaskViewSet)
+app_name = 'task'
+
+issue_patterns = [
+    path('', v.issue_list, name='issue_list'),
+]
+
+milestone_patterns = [
+    path('', v.milestone_list, name='issue_list'),
+]
+
+task_patterns = [
+    path('', v.task_list, name='task_list'),
+]
 
 urlpatterns = [
-    path("", include(router.urls)),
+    path('issue/', include(issue_patterns)),
+    path('milestone/', include(milestone_patterns)),
+    path('task/', include(task_patterns)),
 ]
