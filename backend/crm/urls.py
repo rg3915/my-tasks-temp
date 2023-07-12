@@ -9,5 +9,5 @@ customer_patterns = [
 ]
 
 urlpatterns = [
-    path('', include(customer_patterns)),
+    path('customer/', include(customer_patterns)),
 ]

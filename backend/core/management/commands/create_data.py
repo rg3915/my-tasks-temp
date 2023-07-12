@@ -7,6 +7,7 @@ from django.utils.text import slugify
 from faker import Faker
 
 from backend.core.utils import (
+    gen_company,
     gen_name,
     gen_phrase,
     gen_short_title,
@@ -31,7 +32,7 @@ STATUS = ('o', 'cl', 'ca', 'in')
 
 def create_customers():
     for _ in progressbar(range(1, 6), 'Customers'):
-        name = gen_name()
+        name = gen_company()
         Customer.objects.get_or_create(name=name)
 
 

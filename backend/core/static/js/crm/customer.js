@@ -1,8 +1,10 @@
-const data = document.currentScript.dataset
-const csrftoken = data.csrf
+const mydata = document.currentScript.dataset
+const csrftoken = mydata.csrf
 
+const app = 'crm'
 const model = 'customer'
-const baseUrl = `/api/v1/${model}`
+const baseUrl = `/api/v1/${app}`
+const url = `${baseUrl}/${model}/`
 const headers = { "Content-Type": "application/json", "X-CSRFToken": csrftoken }
 
 const getItems = () => ({
@@ -16,7 +18,7 @@ const getItems = () => ({
   },
 
   getData() {
-    axios.get(`${baseUrl}/${model}/`)
+    axios.get(url)
       .then(response => this.filteredItems = response.data)
   },
 
@@ -25,7 +27,7 @@ const getItems = () => ({
       this.getData()
       return
     }
-    const response = await axios.get(`${baseUrl}/${model}/?search=${this.search}`)
+    const response = await axios.get(`${url}?search=${this.search}`)
     this.filteredItems = response.data
   },
 
@@ -50,7 +52,7 @@ const getItems = () => ({
     if (!this.editItem.pk) {
       // Adiciona
       const bodyData = { ...this.editItem }
-      axios.post(`${baseUrl}/${model}/`, bodyData, { headers: headers })
+      axios.post(url, bodyData, { headers: headers })
         .then(response => {
           this.filteredItems = [response.data, ...this.filteredItems]
           this.resetForm()
@@ -60,7 +62,7 @@ const getItems = () => ({
       const pk = this.editItem.pk
       // Remove o pk e associa o restante a bodyData
       const { pk: _, ...bodyData } = this.editItem
-      axios.patch(`${baseUrl}/${model}/${pk}/`, bodyData, { headers: headers })
+      axios.patch(`${url}${pk}/`, bodyData, { headers: headers })
         .then(response => {
           const items = [...this.filteredItems]
           const index = items.findIndex(p => p.pk == response.data.pk)

@@ -35,3 +35,7 @@ def gen_phrase(n=5):
 
 def gen_name():
     return fake.first_name()
+
+
+def gen_company():
+    return fake.company()
