@@ -45,21 +45,36 @@ STATUS = (
 )
 
 
+class Sprint(UuidModel, TimeStampedModel):
+    title = models.CharField(max_length=100, null=True, blank=True)
+    project = models.ForeignKey(
+        Project,
+        on_delete=models.CASCADE,
+        related_name='sprints',
+    )
+
+    class Meta:
+        ordering = ('created',)
+        verbose_name_plural = 'Sprints'
+
+    def __str__(self):
+        return f'{self.title}'
+
+
 class Issue(TimeStampedModel, UuidModel):
     number = models.PositiveIntegerField()
     title = models.CharField(max_length=255)
     description = models.TextField(null=True, blank=True)
-    project = models.ForeignKey(
-        Project,
-        on_delete=models.CASCADE,
-    )
     labels = models.ManyToManyField(Label, blank=True)
     milestone = models.ForeignKey(
         Milestone,
         on_delete=models.CASCADE,
-        related_name='issues',
         null=True,
         blank=True,
+    )
+    sprint = models.ForeignKey(
+        Sprint,
+        on_delete=models.CASCADE,
     )
     url = models.URLField(max_length=200, null=True, blank=True)
     status = models.CharField(max_length=2, choices=STATUS, default='o')
