@@ -3,6 +3,12 @@ from django.db import models
 from backend.core.models import Active, TimeStampedModel
 from backend.crm.models import Customer
 
+REPOSITORY_NAMES = (
+    ('b', 'Bitbucket'),
+    ('gh', 'Github'),
+    ('gl', 'Gitlab'),
+)
+
 
 class Project(TimeStampedModel, Active):
     title = models.CharField(max_length=255, unique=True)
@@ -12,7 +18,7 @@ class Project(TimeStampedModel, Active):
         verbose_name='cliente',
         related_name='projects',
     )
-    repository_name = models.CharField(max_length=100, null=True, blank=True)
+    repository_name = models.CharField(max_length=2, choices=REPOSITORY_NAMES, null=True, blank=True)
     repository_url = models.URLField(max_length=200, null=True, blank=True)
 
     class Meta:
@@ -22,6 +28,9 @@ class Project(TimeStampedModel, Active):
 
     def __str__(self):
         return f'{self.title}'
+
+    def repository_name_display(self):
+        return self.get_repository_name_display()
 
     def get_payments(self):
         return [sprint.get_payments() for sprint in self.get_sprints()]

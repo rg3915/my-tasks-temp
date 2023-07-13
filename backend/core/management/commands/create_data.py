@@ -23,7 +23,11 @@ fake = Faker()
 
 warnings.filterwarnings('ignore')
 
-REPOSITORIES = ('github/rg3915/', 'gitlab/rg3915/', 'bitbucket/rg3915/')
+REPOSITORIES = (
+    ('b', 'bitbucket/rg3915/'),
+    ('gh', 'github/rg3915/'),
+    ('gl', 'gitlab/rg3915/'),
+)
 TAGS = ('template', 'chat', 'task', 'data', 'modelling')
 LABELS = ('bug', 'frontend', 'backend', 'feature', 'refactor', 'test')
 MILESTONES = ('v1.0', 'v1.5', 'v2.0', 'v3.0', 'v4.0')
@@ -42,9 +46,15 @@ def create_projects():
         customer = choice(Customer.objects.all())
 
         _repository_name = choice(REPOSITORIES)
-        repository_name = f'{_repository_name}{slugify(title.lower())}'
+        repository_name = _repository_name[0]
+        repository_url = f'{_repository_name[1]}{slugify(title.lower())}'
 
-        Project.objects.create(title=title, customer=customer, repository_name=repository_name)
+        Project.objects.create(
+            title=title,
+            customer=customer,
+            repository_name=repository_name,
+            repository_url=repository_url,
+        )
 
 
 def create_tags():
