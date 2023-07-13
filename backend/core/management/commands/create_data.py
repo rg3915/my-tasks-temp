@@ -29,7 +29,14 @@ REPOSITORIES = (
     ('gl', 'gitlab/rg3915/'),
 )
 TAGS = ('template', 'chat', 'task', 'data', 'modelling')
-LABELS = ('bug', 'frontend', 'backend', 'feature', 'refactor', 'test')
+LABELS = (
+    ('backend', '#8ff0a4'),
+    ('bug', '#f66151'),
+    ('feature', '#cfcfcf'),
+    ('frontend', '#99c1f1'),
+    ('refactor', '#f9f06b'),
+    ('test', '#8ff0a4'),
+)
 MILESTONES = ('v1.0', 'v1.5', 'v2.0', 'v3.0', 'v4.0')
 STATUS = ('o', 'cl', 'ca', 'in')
 
@@ -64,7 +71,7 @@ def create_tags():
 
 def create_labels():
     for label in progressbar(LABELS, 'Labels'):
-        Label.objects.get_or_create(label=label)
+        Label.objects.get_or_create(label=label[0], color=label[1])
 
 
 def create_milestones():
@@ -76,7 +83,7 @@ def create_sprints():
     projects = Project.objects.all()
     for project in progressbar(projects, 'Sprints'):
         Sprint.objects.create(
-            title=gen_title(),
+            number=1,
             project=project,
         )
 

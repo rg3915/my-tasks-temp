@@ -1,6 +1,16 @@
 from django import forms
 
-from .models import Issue, Milestone, Task
+from .models import Issue, Label, Milestone, Task
+
+
+class LabelForm(forms.ModelForm):
+
+    class Meta:
+        model = Label
+        fields = '__all__'
+        widgets = {
+            'color': forms.TextInput(attrs={'type': 'color'}),
+        }
 
 
 class IssueForm(forms.ModelForm):

@@ -17,6 +17,7 @@ class Tag(models.Model):
 
 class Label(models.Model):
     label = models.CharField(max_length=30, unique=True)
+    color = models.CharField(max_length=7, default="#FFFFFF")
 
     class Meta:
         ordering = ('label',)
@@ -46,7 +47,7 @@ STATUS = (
 
 
 class Sprint(UuidModel, TimeStampedModel):
-    title = models.CharField(max_length=100, null=True, blank=True)
+    number = models.PositiveSmallIntegerField(null=True, blank=True)
     project = models.ForeignKey(
         Project,
         on_delete=models.CASCADE,
@@ -58,7 +59,7 @@ class Sprint(UuidModel, TimeStampedModel):
         verbose_name_plural = 'Sprints'
 
     def __str__(self):
-        return f'{self.title}'
+        return f'{self.number} - {self.project}'
 
     def get_issues(self):
         return self.issue_set.all()
@@ -92,8 +93,14 @@ class Issue(TimeStampedModel, UuidModel):
     def __str__(self):
         return f'{self.number} - {self.title}'
 
+    def status_display(self):
+        return self.get_status_display()
+
     def get_labels(self):
-        return self.labels.all()
+        return ', '.join(self.labels.values_list('label', flat=True))
+
+    def get_project(self):
+        return self.sprint.project.title
 
 
 class Task(TimeStampedModel, UuidModel):

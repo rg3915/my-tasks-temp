@@ -1,5 +1,6 @@
 from django.contrib import admin
 
+from .forms import LabelForm
 from .models import Issue, Label, Milestone, Sprint, Tag, Task
 
 
@@ -11,8 +12,9 @@ class TagAdmin(admin.ModelAdmin):
 
 @admin.register(Label)
 class LabelAdmin(admin.ModelAdmin):
-    list_display = ('__str__',)
+    list_display = ('__str__', 'color')
     search_fields = ('label',)
+    form = LabelForm
 
 
 @admin.register(Milestone)
@@ -30,7 +32,6 @@ class IssueInline(admin.TabularInline):
 class SprintAdmin(admin.ModelAdmin):
     inlines = (IssueInline,)
     list_display = ('__str__', 'project')
-    search_fields = ('title',)
     list_filter = ('project',)
 
 
