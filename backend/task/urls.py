@@ -9,7 +9,7 @@ issue_patterns = [
 ]
 
 milestone_patterns = [
-    path('', v.milestone_list, name='issue_list'),
+    path('', v.milestone_list, name='milestone_list'),
 ]
 
 task_patterns = [

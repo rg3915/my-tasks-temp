@@ -7,7 +7,14 @@ from backend.task.models import Issue
 
 router = Router()
 
-IssueSchema = create_schema(Issue, depth=1)
+IssueSchema = create_schema(
+    Issue,
+    depth=1,
+    custom_fields=[
+        ('status_display', str, None),
+        ('get_labels', str, None),
+        ('get_project', str, None),
+    ],)
 
 
 @router.get('issue/', response=List[IssueSchema])
