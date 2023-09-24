@@ -1,6 +1,25 @@
 {% extends "base.html" %}
 {% load static %}
 
+{% block chartjs %}
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.css"
+  />
+  <script
+    src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js"
+    defer
+  ></script>
+  <script
+    src="{% static 'js/charts-lines.js' %}"
+    defer
+  ></script>
+  <script
+    src="{% static 'js/charts-pie.js' %}"
+    defer
+  ></script>
+{% endblock chartjs %}
+
 {% block content %}
   <div class="container px-6 mx-auto grid">
     <h2 class="my-6 text-2xl font-semibold text-gray-700 dark:text-gray-200">
@@ -116,7 +135,7 @@
     </div>
 
     <div class="grid gap-6 mb-8 md:grid-cols-2">
-<!-- Tasks -->
+    <!-- Tasks -->
       <div class="w-full overflow-hidden rounded-lg shadow-xs">
         <h2 class="my-6 ml-4 text-2xl font-semibold text-gray-700 dark:text-gray-200">
           Últimas Tarefas
@@ -135,7 +154,7 @@
               <tr class="text-gray-700 dark:text-gray-400">
                 <td class="px-4 py-3">
                   <div class="flex items-center text-sm">
-                <!-- Avatar with inset shadow -->
+                  <!-- Avatar with inset shadow -->
                     <div class="relative hidden w-8 h-8 mr-3 rounded-full md:block">
                       <img
                         class="object-cover w-full h-full rounded-full"
@@ -175,7 +194,7 @@
               <tr class="text-gray-700 dark:text-gray-400">
                 <td class="px-4 py-3">
                   <div class="flex items-center text-sm">
-                <!-- Avatar with inset shadow -->
+                  <!-- Avatar with inset shadow -->
                     <div class="relative hidden w-8 h-8 mr-3 rounded-full md:block">
                       <img
                         class="object-cover w-full h-full rounded-full"
@@ -212,7 +231,7 @@
               <tr class="text-gray-700 dark:text-gray-400">
                 <td class="px-4 py-3">
                   <div class="flex items-center text-sm">
-                <!-- Avatar with inset shadow -->
+                  <!-- Avatar with inset shadow -->
                     <div class="relative hidden w-8 h-8 mr-3 rounded-full md:block">
                       <img
                         class="object-cover w-full h-full rounded-full"
@@ -249,7 +268,7 @@
               <tr class="text-gray-700 dark:text-gray-400">
                 <td class="px-4 py-3">
                   <div class="flex items-center text-sm">
-                <!-- Avatar with inset shadow -->
+                  <!-- Avatar with inset shadow -->
                     <div class="relative hidden w-8 h-8 mr-3 rounded-full md:block">
                       <img
                         class="object-cover w-full h-full rounded-full"
@@ -286,7 +305,7 @@
               <tr class="text-gray-700 dark:text-gray-400">
                 <td class="px-4 py-3">
                   <div class="flex items-center text-sm">
-                <!-- Avatar with inset shadow -->
+                  <!-- Avatar with inset shadow -->
                     <div class="relative hidden w-8 h-8 mr-3 rounded-full md:block">
                       <img
                         class="object-cover w-full h-full rounded-full"
@@ -323,7 +342,7 @@
               <tr class="text-gray-700 dark:text-gray-400">
                 <td class="px-4 py-3">
                   <div class="flex items-center text-sm">
-                <!-- Avatar with inset shadow -->
+                  <!-- Avatar with inset shadow -->
                     <div class="relative hidden w-8 h-8 mr-3 rounded-full md:block">
                       <img
                         class="object-cover w-full h-full rounded-full"
@@ -360,7 +379,7 @@
               <tr class="text-gray-700 dark:text-gray-400">
                 <td class="px-4 py-3">
                   <div class="flex items-center text-sm">
-                <!-- Avatar with inset shadow -->
+                  <!-- Avatar with inset shadow -->
                     <div class="relative hidden w-8 h-8 mr-3 rounded-full md:block">
                       <img
                         class="object-cover w-full h-full rounded-full"
@@ -397,7 +416,7 @@
               <tr class="text-gray-700 dark:text-gray-400">
                 <td class="px-4 py-3">
                   <div class="flex items-center text-sm">
-                <!-- Avatar with inset shadow -->
+                  <!-- Avatar with inset shadow -->
                     <div class="relative hidden w-8 h-8 mr-3 rounded-full md:block">
                       <img
                         class="object-cover w-full h-full rounded-full"
@@ -434,7 +453,7 @@
               <tr class="text-gray-700 dark:text-gray-400">
                 <td class="px-4 py-3">
                   <div class="flex items-center text-sm">
-                <!-- Avatar with inset shadow -->
+                  <!-- Avatar with inset shadow -->
                     <div class="relative hidden w-8 h-8 mr-3 rounded-full md:block">
                       <img
                         class="object-cover w-full h-full rounded-full"
@@ -475,7 +494,7 @@
             Showing 21-30 of 100
           </span>
           <span class="col-span-2"></span>
-      <!-- Pagination -->
+        <!-- Pagination -->
           <span class="flex col-span-4 mt-2 sm:mt-auto sm:justify-end">
             <nav aria-label="Table navigation">
               <ul class="inline-flex items-center">
@@ -573,7 +592,7 @@
               <tr class="text-gray-700 dark:text-gray-400">
                 <td class="px-4 py-3">
                   <div class="flex items-center text-sm">
-                <!-- Avatar with inset shadow -->
+                  <!-- Avatar with inset shadow -->
                     <div class="relative hidden w-8 h-8 mr-3 rounded-full md:block">
                       <img
                         class="object-cover w-full h-full rounded-full"
@@ -613,7 +632,7 @@
               <tr class="text-gray-700 dark:text-gray-400">
                 <td class="px-4 py-3">
                   <div class="flex items-center text-sm">
-                <!-- Avatar with inset shadow -->
+                  <!-- Avatar with inset shadow -->
                     <div class="relative hidden w-8 h-8 mr-3 rounded-full md:block">
                       <img
                         class="object-cover w-full h-full rounded-full"
@@ -650,7 +669,7 @@
               <tr class="text-gray-700 dark:text-gray-400">
                 <td class="px-4 py-3">
                   <div class="flex items-center text-sm">
-                <!-- Avatar with inset shadow -->
+                  <!-- Avatar with inset shadow -->
                     <div class="relative hidden w-8 h-8 mr-3 rounded-full md:block">
                       <img
                         class="object-cover w-full h-full rounded-full"
@@ -687,7 +706,7 @@
               <tr class="text-gray-700 dark:text-gray-400">
                 <td class="px-4 py-3">
                   <div class="flex items-center text-sm">
-                <!-- Avatar with inset shadow -->
+                  <!-- Avatar with inset shadow -->
                     <div class="relative hidden w-8 h-8 mr-3 rounded-full md:block">
                       <img
                         class="object-cover w-full h-full rounded-full"
@@ -724,7 +743,7 @@
               <tr class="text-gray-700 dark:text-gray-400">
                 <td class="px-4 py-3">
                   <div class="flex items-center text-sm">
-                <!-- Avatar with inset shadow -->
+                  <!-- Avatar with inset shadow -->
                     <div class="relative hidden w-8 h-8 mr-3 rounded-full md:block">
                       <img
                         class="object-cover w-full h-full rounded-full"
@@ -761,7 +780,7 @@
               <tr class="text-gray-700 dark:text-gray-400">
                 <td class="px-4 py-3">
                   <div class="flex items-center text-sm">
-                <!-- Avatar with inset shadow -->
+                  <!-- Avatar with inset shadow -->
                     <div class="relative hidden w-8 h-8 mr-3 rounded-full md:block">
                       <img
                         class="object-cover w-full h-full rounded-full"
@@ -798,7 +817,7 @@
               <tr class="text-gray-700 dark:text-gray-400">
                 <td class="px-4 py-3">
                   <div class="flex items-center text-sm">
-                <!-- Avatar with inset shadow -->
+                  <!-- Avatar with inset shadow -->
                     <div class="relative hidden w-8 h-8 mr-3 rounded-full md:block">
                       <img
                         class="object-cover w-full h-full rounded-full"
@@ -835,7 +854,7 @@
               <tr class="text-gray-700 dark:text-gray-400">
                 <td class="px-4 py-3">
                   <div class="flex items-center text-sm">
-                <!-- Avatar with inset shadow -->
+                  <!-- Avatar with inset shadow -->
                     <div class="relative hidden w-8 h-8 mr-3 rounded-full md:block">
                       <img
                         class="object-cover w-full h-full rounded-full"
@@ -872,7 +891,7 @@
               <tr class="text-gray-700 dark:text-gray-400">
                 <td class="px-4 py-3">
                   <div class="flex items-center text-sm">
-                <!-- Avatar with inset shadow -->
+                  <!-- Avatar with inset shadow -->
                     <div class="relative hidden w-8 h-8 mr-3 rounded-full md:block">
                       <img
                         class="object-cover w-full h-full rounded-full"
@@ -913,7 +932,7 @@
             Showing 21-30 of 100
           </span>
           <span class="col-span-2"></span>
-      <!-- Pagination -->
+        <!-- Pagination -->
           <span class="flex col-span-4 mt-2 sm:mt-auto sm:justify-end">
             <nav aria-label="Table navigation">
               <ul class="inline-flex items-center">
@@ -993,8 +1012,6 @@
       </div>
 
     </div>
-
-
 
   <!-- Charts -->
     <h2 class="my-6 text-2xl font-semibold text-gray-700 dark:text-gray-200">
