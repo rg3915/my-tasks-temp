@@ -21,6 +21,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # others apps
     'django_extensions',
+    'widget_tweaks',
     'dr_scaffold',
     # my apps
     'backend.core',

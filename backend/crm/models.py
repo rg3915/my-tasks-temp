@@ -4,7 +4,7 @@ from backend.core.models import Active
 
 
 class Customer(Active):
-    name = models.CharField(max_length=255, unique=True)
+    name = models.CharField('Nome', max_length=255, unique=True, help_text='Digite o nome do cliente')
 
     class Meta:
         ordering = ('name',)
