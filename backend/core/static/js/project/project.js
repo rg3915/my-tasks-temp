@@ -51,7 +51,7 @@ const getItems = () => ({
   saveData() {
     if (!this.editItem.pk) {
       // Adiciona
-      const bodyData = { ...this.editItem }
+      const { customer: _, ...bodyData } = { ...this.editItem, customer_id: this.editItem.customer }
       axios.post(url, bodyData, { headers: headers })
         .then(response => {
           this.filteredItems = [response.data, ...this.filteredItems]

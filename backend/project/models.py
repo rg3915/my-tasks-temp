@@ -11,7 +11,7 @@ REPOSITORY_NAMES = (
 
 
 class Project(TimeStampedModel, Active):
-    title = models.CharField(max_length=255, unique=True)
+    title = models.CharField(max_length=255, unique=True, help_text='Digite o título do projeto')
     customer = models.ForeignKey(
         Customer,
         on_delete=models.CASCADE,
@@ -19,7 +19,7 @@ class Project(TimeStampedModel, Active):
         related_name='projects',
     )
     repository_name = models.CharField(max_length=2, choices=REPOSITORY_NAMES, null=True, blank=True)
-    repository_url = models.URLField(max_length=200, null=True, blank=True)
+    repository_url = models.URLField(max_length=200, null=True, blank=True, help_text='Digite a url do repositório')
 
     class Meta:
         ordering = ('title',)
