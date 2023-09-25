@@ -1,9 +1,12 @@
+import json
 import sys
 from pprint import pprint
 
 import gitlab
 from decouple import config
 from faker import Faker
+
+from backend.task.models import Issue, Label, Sprint
 
 fake = Faker()
 
@@ -44,55 +47,59 @@ def gen_company():
     return fake.company()
 
 
-def make_gitlab_issue(args):
+def save_issue(data):
+    labels = Label.objects.filter(label__in=data['labels'])
+    sprint = Sprint.objects.filter(project=data['project']).last()
+
+    issue = Issue.objects.create(
+        number=data['iid'],
+        title=data['title'],
+        description=data['description'],
+        milestone=data['milestone'],
+        sprint=sprint,
+        url=data['web_url'],
+    )
+    for label in labels:
+        issue.labels.add(label)
+
+
+def create_gitlab_issue(args):
     '''
     Requer /etc/rg3915.cfg
     '''
     gl = gitlab.Gitlab.from_config('somewhere', ['/etc/rg3915.cfg'])
 
-    print('args')
-    pprint(args)
+    command, title, body, labels, project, milestone = args.values()
 
-    project, command, title, body, labels, milestone, gitlab_project_id, milestone_id = args.values()
-
-    print('project', project)
-
-    gl_project = gl.projects.get(gitlab_project_id)
+    gl_project = gl.projects.get(project.gitlab_project_id)
 
     data_dict = {
         "title": f"{title}",
         "description": f"{body}",
         "assignee_id": config('GITLAB_ASSIGNEE_ID'),
         "labels": labels,
-        "milestone_id": milestone_id,
+        "milestone_id": milestone.original_id,
     }
 
-    pprint(gl_project)
+    response = gl_project.issues.create(data_dict)
 
-    pprint(data_dict)
+    data = json.loads(response.to_json())
 
-    # response = gl_project.issues.create(data_dict)
+    # TESTE
+    # data = {
+    #     "iid": 7,
+    #     "title": "Teste",
+    #     "description": "Descrição teste.",
+    #     "labels": ["backend", "frontend"],
+    #     # "time_stats":
+    #     # {
+    #     #     "time_estimate": 0,
+    #     #     "total_time_spent": 0,
+    #     # },
+    #     "web_url": "https://gitlab.com/rg3915/my-tasks/-/issues/7",
+    # }
 
-    # print('response')
-    # print(response.iid)
-    # print(response.title)
-    # print(response.description)
+    data['project'] = project
+    data['milestone'] = milestone
 
-    # data = response.to_json()
-
-    # print('data')
-    # pprint(data)
-
-    data = {
-        "iid": 7,
-        "title": "Teste",
-        "description": "Descri\\u00e7\\u00e3o teste.",
-        "labels": ["backend", "frontend"],
-        "time_stats":
-        {
-            "time_estimate": 0,
-            "total_time_spent": 0,
-        },
-    }
-
-    # write_on_tarefas(project, tarefas_filename, data, labels, milestone, milestone_v)
+    save_issue(data)

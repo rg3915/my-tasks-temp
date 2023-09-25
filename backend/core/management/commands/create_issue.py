@@ -8,14 +8,13 @@ m create_issue \
 --milestone='1'
 '''
 import warnings
-from pprint import pprint
 
 from django.core.management.base import BaseCommand
 from faker import Faker
 
-from backend.core.utils import make_gitlab_issue
+from backend.core.utils import create_gitlab_issue
 from backend.project.models import Project
-from backend.task.models import Issue, Milestone
+from backend.task.models import Milestone
 
 fake = Faker()
 
@@ -24,27 +23,22 @@ warnings.filterwarnings('ignore')
 
 def create_issue(options):
     args = dict(
-        project=options['project'],
         command=options['command'],
         title=options['title'],
         body=options['body'],
         labels=options['labels'],
-        milestone=options['milestone'],
     )
-    project = Project.objects.filter(title=args['project']).first()
-    args['gitlab_project_id'] = project.gitlab_project_id
-
-    pprint(args)
-    print(project.get_repository_name_display())
+    project = Project.objects.filter(title=options['project']).first()
+    args['project'] = project
 
     repository_name = project.get_repository_name_display()
-    milestone = Milestone.objects.filter(original_id=args['milestone'], project=project).first()
+    milestone_obj = Milestone.objects.filter(original_id=options['milestone'], project=project).first()
 
     # Pega o milestone correto do projeto.
-    args['milestone_id'] = str(milestone.original_id)
+    args['milestone'] = milestone_obj
 
     if repository_name == 'Gitlab':
-        make_gitlab_issue(args)
+        create_gitlab_issue(args)
 
 
 class Command(BaseCommand):

@@ -44,14 +44,6 @@ class Milestone(models.Model):
         return f'{self.title}'
 
 
-STATUS = (
-    ('o', 'Open'),
-    ('cl', 'Close'),
-    ('ca', 'Canceled'),
-    ('in', 'Invalid'),
-)
-
-
 class Sprint(UuidModel, TimeStampedModel):
     number = models.PositiveSmallIntegerField(null=True, blank=True)
     project = models.ForeignKey(
@@ -72,6 +64,14 @@ class Sprint(UuidModel, TimeStampedModel):
 
     def get_payments(self):
         return self.payment_set.all()
+
+
+STATUS = (
+    ('o', 'Open'),
+    ('cl', 'Close'),
+    ('ca', 'Canceled'),
+    ('in', 'Invalid'),
+)
 
 
 class Issue(TimeStampedModel, UuidModel):
