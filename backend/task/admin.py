@@ -19,7 +19,7 @@ class LabelAdmin(admin.ModelAdmin):
 
 @admin.register(Milestone)
 class MilestoneAdmin(admin.ModelAdmin):
-    list_display = ('__str__',)
+    list_display = ('__str__', 'original_id', 'project')
     search_fields = ('title',)
 
 

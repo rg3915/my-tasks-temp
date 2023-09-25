@@ -20,6 +20,7 @@ class Project(TimeStampedModel, Active):
     )
     repository_name = models.CharField(max_length=2, choices=REPOSITORY_NAMES, null=True, blank=True)
     repository_url = models.URLField(max_length=200, null=True, blank=True, help_text='Digite a url do repositório')
+    gitlab_project_id = models.CharField(max_length=8, null=True, blank=True, help_text='Id do repositório no Gitlab')
 
     class Meta:
         ordering = ('title',)

@@ -28,7 +28,13 @@ class Label(models.Model):
 
 
 class Milestone(models.Model):
+    original_id = models.PositiveSmallIntegerField(help_text='Id on repository')
     title = models.CharField(max_length=30, unique=True)
+    project = models.ForeignKey(
+        Project,
+        on_delete=models.CASCADE,
+        related_name='milestones',
+    )
 
     class Meta:
         ordering = ('title',)

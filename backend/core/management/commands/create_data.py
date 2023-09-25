@@ -23,12 +23,19 @@ fake = Faker()
 
 warnings.filterwarnings('ignore')
 
+PROJECTS = (
+    'my-tasks',
+    'dicas-de-django',
+)
+
 REPOSITORIES = (
     ('b', 'bitbucket/rg3915/'),
     ('gh', 'github/rg3915/'),
     ('gl', 'gitlab/rg3915/'),
 )
+
 TAGS = ('template', 'chat', 'task', 'data', 'modelling')
+
 LABELS = (
     ('backend', '#8ff0a4'),
     ('bug', '#f66151'),
@@ -37,24 +44,31 @@ LABELS = (
     ('refactor', '#f9f06b'),
     ('test', '#8ff0a4'),
 )
-MILESTONES = ('v1.0', 'v1.5', 'v2.0', 'v3.0', 'v4.0')
+
+MILESTONES = (
+    (1, 'v1.0'),
+    (2, 'v1.5'),
+    (3, 'v2.0'),
+)
+
 STATUS = ('o', 'cl', 'ca', 'in')
 
 
 def create_customers():
-    for _ in progressbar(range(1, 6), 'Customers'):
+    for _ in progressbar(range(1, 2), 'Customers'):
         name = gen_company()
         Customer.objects.get_or_create(name=name)
 
 
 def create_projects():
-    for _ in progressbar(range(1, 16), 'Projects'):
-        title = gen_short_title()
-        customer = choice(Customer.objects.all())
+    for title in progressbar(PROJECTS, 'Projects'):
+        # title = gen_short_title()
+        title = title
+        customer = Customer.objects.first()
 
         _repository_name = choice(REPOSITORIES)
         repository_name = _repository_name[0]
-        repository_url = f'{_repository_name[1]}{slugify(title.lower())}'
+        repository_url = f'https://www.{_repository_name[1]}{slugify(title.lower())}'
 
         Project.objects.create(
             title=title,
@@ -75,8 +89,13 @@ def create_labels():
 
 
 def create_milestones():
-    for title in progressbar(MILESTONES, 'Milestones'):
-        Milestone.objects.get_or_create(title=title)
+    project = Project.objects.first()
+    for original_id, title in progressbar(MILESTONES, 'Milestones'):
+        Milestone.objects.get_or_create(
+            original_id=original_id,
+            title=title,
+            project=project,
+        )
 
 
 def create_sprints():
