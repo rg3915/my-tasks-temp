@@ -8,7 +8,7 @@ from decouple import config
 from faker import Faker
 from rich import print
 
-from backend.task.models import Issue, Label, Sprint
+from backend.task.models import Issue, Label, Sprint, Task
 
 fake = Faker()
 
@@ -71,13 +71,20 @@ def gen_company():
     return fake.company()
 
 
+def datetime_to_string(value, format='%Y-%m-%d %H:%M:%S'):
+    '''
+    Transforma datetime em string no formato %Y-%m-%d %H:%M:%S.
+    '''
+    return value.strftime(format)
+
+
 def write_on_tarefas(filename, issue, labels, is_bug):
     today = date.today().strftime('%d/%m/%y')
 
     _labels = ','.join(labels)
 
     with open(filename, 'a') as f:
-        f.write(f'\n---\n\n')
+        f.write('\n---\n\n')
         f.write(f'[ ] {issue.number} - {issue.title}\n')
         f.write(f'    {_labels}\n')
         f.write(f'    {today}\n\n\n')
@@ -134,13 +141,16 @@ def save_issue(data):
 
     write_on_tarefas(filename, issue, data['labels'], is_bug)
     write_changelog_dropbox(issue)
+    return issue
 
 
-def datetime_to_string(value, format='%Y-%m-%d %H:%M:%S'):
-    '''
-    Transforma datetime em string no formato %Y-%m-%d %H:%M:%S.
-    '''
-    return value.strftime(format)
+def save_task(issue):
+    data = dict(
+        title=issue.title,
+        project=issue.sprint.project,
+        issue=issue,
+    )
+    Task.objects.create(**data)
 
 
 def create_gitlab_issue(args):
@@ -182,4 +192,4 @@ def create_gitlab_issue(args):
     data['project'] = project
     data['milestone'] = milestone
 
-    save_issue(data)
+    return data

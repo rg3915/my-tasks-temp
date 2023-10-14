@@ -11,7 +11,7 @@ import warnings
 
 from django.core.management.base import BaseCommand
 
-from backend.core.utils import create_gitlab_issue
+from backend.core.utils import create_gitlab_issue, save_issue, save_task
 from backend.project.models import Project
 from backend.task.models import Milestone
 
@@ -35,7 +35,10 @@ def create_issue(options):
     args['milestone'] = milestone_obj
 
     if repository_name == 'Gitlab':
-        create_gitlab_issue(args)
+        data = create_gitlab_issue(args)
+
+    issue = save_issue(data)
+    save_task(issue)
 
 
 class Command(BaseCommand):
