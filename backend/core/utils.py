@@ -1,13 +1,38 @@
 import json
+import os
 import sys
+from datetime import date, datetime
 
 import gitlab
 from decouple import config
 from faker import Faker
+from rich import print
 
 from backend.task.models import Issue, Label, Sprint
 
 fake = Faker()
+
+FOLDER_BASE = '/home/regis/Dropbox/projetos'
+
+
+def check_if_the_date_already_exists(filename, milestone_title):
+    date_format = datetime.now().strftime('%Y-%m-%d')
+
+    # Check if the file exists, and create it if it doesn't
+    if not os.path.exists(filename):
+        with open(filename, 'w') as file:
+            file.write(f"## {milestone_title}\n")
+
+    # Check if the date already exists in the file
+    with open(filename, 'r') as file:
+        file_contents = file.read()
+        if date_format in file_contents:
+            print("Date already exists in the file.")
+        else:
+            # Append the date to the file
+            with open(filename, 'a') as file:
+                file.write(f"\n## {date_format}\n\n")
+            print(f"Date {date_format} added to the file {filename}.")
 
 
 def progressbar(it, prefix="", size=60, file=sys.stdout):
@@ -46,6 +71,39 @@ def gen_company():
     return fake.company()
 
 
+def write_on_tarefas(filename, issue, labels, is_bug):
+    today = date.today().strftime('%d/%m/%y')
+
+    _labels = ','.join(labels)
+
+    with open(filename, 'a') as f:
+        f.write(f'\n---\n\n')
+        f.write(f'[ ] {issue.number} - {issue.title}\n')
+        f.write(f'    {_labels}\n')
+        f.write(f'    {today}\n\n\n')
+
+        if issue.description:
+            f.write(f'    {issue.description}\n\n')
+
+        title = issue.title
+        if is_bug:
+            title = f'bugfix: {title}'
+
+        f.write(f"    _gadd '{title}. close #{issue.number}'; # gp\n")
+
+
+def write_changelog_dropbox(issue):
+    customer = issue.sprint.project.customer.name
+    project = issue.sprint.project.title
+    filename = f'{FOLDER_BASE}/{customer}/{project}/changelog/CHANGELOG_{issue.milestone.title}.md'
+    print(filename)
+
+    check_if_the_date_already_exists(filename, issue.milestone.title)
+
+    with open(filename, 'a') as f:
+        f.write(f'* {issue.title}. #{issue.number}\n')
+
+
 def save_issue(data):
     labels = Label.objects.filter(label__in=data['labels'])
     sprint = Sprint.objects.filter(project=data['project']).last()
@@ -60,6 +118,22 @@ def save_issue(data):
     )
     for label in labels:
         issue.labels.add(label)
+
+    filename = f'{FOLDER_BASE}/{sprint.project.customer.name}/{sprint.project.title}/tarefas.txt'
+
+    number = data['iid']
+    title = data['title']
+
+    print(filename)
+    print(number)
+    print(title)
+
+    is_bug = False
+    if 'bug' in data['labels']:
+        is_bug = True
+
+    write_on_tarefas(filename, issue, data['labels'], is_bug)
+    write_changelog_dropbox(issue)
 
 
 def datetime_to_string(value, format='%Y-%m-%d %H:%M:%S'):

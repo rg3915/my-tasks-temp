@@ -9,3 +9,4 @@ dr-scaffold==2.1.2
 django-ninja==0.22.2
 psycopg2-binary==2.9.6
 python-gitlab==3.15.0
+rich==13.6.0
