@@ -38,7 +38,7 @@ class SprintAdmin(admin.ModelAdmin):
 @admin.register(Issue)
 class IssueAdmin(admin.ModelAdmin):
     list_display = ('__str__', 'get_labels', 'milestone', 'sprint', 'status')
-    readonly_fields = ('slug',)
+    readonly_fields = ('slug', 'created', 'modified')
     search_fields = ('title',)
     list_filter = ('status', 'labels', 'milestone')
     date_hierarchy = 'created'

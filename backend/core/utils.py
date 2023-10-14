@@ -62,6 +62,13 @@ def save_issue(data):
         issue.labels.add(label)
 
 
+def datetime_to_string(value, format='%Y-%m-%d %H:%M:%S'):
+    '''
+    Transforma datetime em string no formato %Y-%m-%d %H:%M:%S.
+    '''
+    return value.strftime(format)
+
+
 def create_gitlab_issue(args):
     '''
     Requer /etc/rg3915.cfg

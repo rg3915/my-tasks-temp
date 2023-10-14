@@ -25,6 +25,10 @@ class TimeStampedModel(models.Model):
     class Meta:
         abstract = True
 
+    def created_display(self):
+        from backend.core.utils import datetime_to_string
+        return datetime_to_string(self.created, '%d/%m/%y')
+
 
 class Active(models.Model):
     active = models.BooleanField('ativo', default=True)
