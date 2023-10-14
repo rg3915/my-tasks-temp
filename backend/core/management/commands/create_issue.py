@@ -10,13 +10,10 @@ m create_issue \
 import warnings
 
 from django.core.management.base import BaseCommand
-from faker import Faker
 
 from backend.core.utils import create_gitlab_issue
 from backend.project.models import Project
 from backend.task.models import Milestone
-
-fake = Faker()
 
 warnings.filterwarnings('ignore')
 

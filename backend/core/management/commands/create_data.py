@@ -6,14 +6,7 @@ from django.core.management.base import BaseCommand
 from django.utils.text import slugify
 from faker import Faker
 
-from backend.core.utils import (
-    gen_company,
-    gen_name,
-    gen_phrase,
-    gen_short_title,
-    gen_title,
-    progressbar
-)
+from backend.core.utils import gen_company, gen_phrase, gen_title, progressbar
 from backend.crm.models import Customer
 from backend.financial.models import Payment
 from backend.project.models import Project

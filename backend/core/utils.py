@@ -1,6 +1,5 @@
 import json
 import sys
-from pprint import pprint
 
 import gitlab
 from decouple import config
