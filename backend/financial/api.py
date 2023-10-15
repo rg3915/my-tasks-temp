@@ -5,7 +5,7 @@ from ninja.orm import create_schema
 
 from .models import Payment
 
-router = Router()
+router = Router(tags=['Financials'])
 
 PaymentSchema = create_schema(Payment)
 

@@ -5,7 +5,7 @@ from ninja.orm import create_schema
 
 from backend.task.models import Issue
 
-router = Router()
+router = Router(tags=['Issues'])
 
 IssueSchema = create_schema(
     Issue,

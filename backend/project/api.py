@@ -6,7 +6,7 @@ from ninja.orm import create_schema
 
 from .models import Project
 
-router = Router()
+router = Router(tags=['Projects'])
 
 ProjectSchema = create_schema(
     Project,
@@ -32,11 +32,11 @@ class ProjectSchemaIn(ModelSchema):
         )
 
 
-@router.get('project/', response=List[ProjectSchema], tags=['Projects'])
+@router.get('project/', response=List[ProjectSchema])
 def list_project(request):
     return Project.objects.all()
 
 
-@router.post('project/', response={HTTPStatus.CREATED: ProjectSchema}, tags=['Projects'])
+@router.post('project/', response={HTTPStatus.CREATED: ProjectSchema})
 def create_project(request, payload: ProjectSchemaIn):
     return Project.objects.create(**payload.dict())

@@ -99,6 +99,7 @@ class Issue(TimeStampedModel, UuidModel):
     def __str__(self):
         return f'{self.number} - {self.title}'
 
+    @property
     def status_display(self):
         return self.get_status_display()
 
@@ -136,6 +137,14 @@ class Task(TimeStampedModel, UuidModel):
 
     def __str__(self):
         return f'{self.title}'
+
+    @property
+    def customer_display(self):
+        return self.project.customer.name
+
+    @property
+    def status_display(self):
+        return self.get_status_display()
 
     def get_tags(self):
         return self.tags.all()
