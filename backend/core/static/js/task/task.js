@@ -51,10 +51,10 @@ const getItems = () => ({
   saveData() {
     if (!this.editItem.pk) {
       // Adiciona
-      const bodyData = { ...this.editItem }
+      const { project: ignoredProject, issue: ignoredIssue, ...bodyData } = { ...this.editItem, project_id: this.editItem.project, issue_id: this.editItem.issue }
       axios.post(url, bodyData, { headers: headers })
         .then(response => {
-          this.filteredItems = [response.data, ...this.filteredItems]
+          this.filteredItems = [...this.filteredItems, response.data]
           this.resetForm()
         })
     } else {

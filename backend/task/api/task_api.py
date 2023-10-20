@@ -1,9 +1,11 @@
-from typing import List
+from http import HTTPStatus
+from pprint import pprint
 
-from ninja import Router
+from django.shortcuts import get_object_or_404, redirect, render, resolve_url
+from ninja import ModelSchema, Router
 from ninja.orm import create_schema
 
-from backend.task.models import Task
+from backend.task.models import Tag, Task
 
 router = Router(tags=['Tasks'])
 
@@ -17,6 +19,36 @@ TaskSchema = create_schema(
 )
 
 
-@router.get('task/', response=List[TaskSchema])
+class TaskSchemaIn(ModelSchema):
+    project_id: int = None
+    issue_id: int = None
+
+    class Config:
+        model = Task
+        model_fields = (
+            'title',
+            'tags',
+            'annotation',
+            'report',
+            'start_time',
+            'end_time',
+            'estimate',
+        )
+
+
+@router.get('task/', response=list[TaskSchema])
 def list_task(request):
     return Task.objects.all()
+
+
+@router.post('task/', response={HTTPStatus.CREATED: TaskSchema})
+def create_task(request, payload: TaskSchemaIn):
+    data = payload.dict()
+    tags = data.pop('tags')
+
+    task = Task.objects.create(**data)
+
+    for pk in tags:
+        tag = get_object_or_404(Tag, pk=pk)
+        task.tags.add(tag)
+    return task

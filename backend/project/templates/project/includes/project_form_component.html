@@ -2,6 +2,7 @@
 {% load widget_tweaks %}
 
 <div
+  x-cloak
   x-show="isModalOpen"
   x-transition:enter="transition ease-out duration-150"
   x-transition:enter-start="opacity-0"
@@ -58,14 +59,14 @@
 
         {% for field in form.visible_fields %}
           {% if field.label == 'Ativo' %}
-            <label class="flex items-center dark:text-gray-400">
+            <label class="flex items-center dark:text-gray-400 mt-2">
               {% render_field field class="text-purple-600 form-checkbox focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:focus:shadow-outline-gray" placeholder=field.help_text %}
               <span class="ml-2">
                 {{ field.label }}
               </span>
             </label>
           {% else %}
-            <label class="block text-sm">
+            <label class="block text-sm mt-2">
               <span class="text-gray-700 dark:text-gray-400">{{ field.label }}</span>
               {% if field.label == 'Cliente' or field.label == 'Repository name' %}
                 {% render_field field class="block w-full mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-select focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:focus:shadow-outline-gray" placeholder=field.help_text %}

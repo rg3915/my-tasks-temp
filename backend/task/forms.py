@@ -40,10 +40,38 @@ class MilestoneForm(forms.ModelForm):
 
 
 class TaskForm(forms.ModelForm):
+    start_time = forms.TimeField(
+        required=False,
+        widget=forms.TimeInput(
+            format='%H:%M:%S',
+            attrs={
+                'type': 'time',
+            }),
+        input_formats=('%H:%M:%S',),
+    )
+    end_time = forms.TimeField(
+        required=False,
+        widget=forms.TimeInput(
+            format='%H:%M:%S',
+            attrs={
+                'type': 'time',
+            }),
+        input_formats=('%H:%M:%S',),
+    )
 
     class Meta:
         model = Task
-        fields = '__all__'
+        fields = (
+            'title',
+            'project',
+            'tags',
+            'issue',
+            'annotation',
+            'report',
+            'start_time',
+            'end_time',
+            'estimate',
+        )
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

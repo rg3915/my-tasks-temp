@@ -82,9 +82,9 @@
                           class="font-semibold"
                           x-text="item.title"
                         ></p>
-                      <!-- <p class="text-xs text-gray-600 dark:text-gray-400">
-                      10x Developer
-                    </p> -->
+                        <p class="text-xs text-gray-600 dark:text-gray-400">
+                          <span x-text="item.tags.map(item => item.tag).join(', ')"></span>
+                        </p>
                       </div>
                     </div>
                   </td>
@@ -98,10 +98,10 @@
                     <span x-text="item.issue.title"></span>
                   </td>
                   <td class="px-4 py-3 text-xs">
-                    <span x-text="item.start_time"></span>
+                    <span x-text="item.start_time.substring(0,5)"></span>
                   </td>
                   <td class="px-4 py-3 text-xs">
-                    <span x-text="item.end_time"></span>
+                    <span x-text="item.end_time.substring(0,5)"></span>
                   </td>
                   <!-- <td class="px-4 py-3 text-xs">
                     <span
