@@ -116,7 +116,7 @@ class Task(TimeStampedModel, UuidModel):
         Project,
         on_delete=models.CASCADE,
     )
-    tags = models.ManyToManyField(Tag, blank=True)
+    tags = models.ManyToManyField(Tag, null=True, blank=True)
     issue = models.OneToOneField(
         Issue,
         on_delete=models.CASCADE,

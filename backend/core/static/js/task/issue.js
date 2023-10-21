@@ -18,7 +18,7 @@ const getItems = () => ({
   },
 
   getData() {
-    axios.get(url)
+    axios(url)
       .then(response => this.filteredItems = response.data)
   },
 
@@ -27,7 +27,7 @@ const getItems = () => ({
       this.getData()
       return
     }
-    const response = await axios.get(`${url}?search=${this.search}`)
+    const response = await axios(`${url}?search=${this.search}`)
     this.filteredItems = response.data
   },
 

@@ -18,8 +18,19 @@ const getItems = () => ({
   },
 
   getData() {
-    axios.get(url)
+    axios(url)
       .then(response => this.filteredItems = response.data)
+
+    this.$watch('editItem.project', (newValue, oldValue) => {
+      if (newValue) this.get_issues(newValue)
+    })
+
+  },
+
+  get_issues(newValue) {
+    const projectId = newValue
+    const urlIssue = `${baseUrl}/issue/${projectId}/`
+    axios(urlIssue).then(response => this.editItem.issue = response.data)
   },
 
   async searchItems() {
@@ -27,7 +38,7 @@ const getItems = () => ({
       this.getData()
       return
     }
-    const response = await axios.get(`${url}?search=${this.search}`)
+    const response = await axios(`${url}?search=${this.search}`)
     this.filteredItems = response.data
   },
 

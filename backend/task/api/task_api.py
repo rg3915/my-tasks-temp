@@ -1,7 +1,6 @@
 from http import HTTPStatus
-from pprint import pprint
 
-from django.shortcuts import get_object_or_404, redirect, render, resolve_url
+from django.shortcuts import get_object_or_404
 from ninja import ModelSchema, Router
 from ninja.orm import create_schema
 
@@ -44,11 +43,16 @@ def list_task(request):
 @router.post('task/', response={HTTPStatus.CREATED: TaskSchema})
 def create_task(request, payload: TaskSchemaIn):
     data = payload.dict()
-    tags = data.pop('tags')
+
+    tags = None
+    if 'tags' in data:
+        tags = data.pop('tags')
 
     task = Task.objects.create(**data)
 
-    for pk in tags:
-        tag = get_object_or_404(Tag, pk=pk)
-        task.tags.add(tag)
+    if tags:
+        for pk in tags:
+            tag = get_object_or_404(Tag, pk=pk)
+            task.tags.add(tag)
+
     return task

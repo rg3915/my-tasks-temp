@@ -48,8 +48,6 @@
               <tr class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b dark:border-gray-700 bg-gray-50 dark:text-gray-400 dark:bg-gray-800">
                 <th class="px-4 py-3">Título</th>
                 <th class="px-4 py-3">Projeto</th>
-                <th class="px-4 py-3">Cliente</th>
-                <th class="px-4 py-3">Issue</th>
                 <th class="px-4 py-3">Início</th>
                 <th class="px-4 py-3">Fim</th>
                 <th class="px-4 py-3">Status</th>
@@ -80,7 +78,7 @@
                       <div>
                         <p
                           class="font-semibold"
-                          x-text="item.title"
+                          x-text="item.issue.number+' - '+item.title"
                         ></p>
                         <p class="text-xs text-gray-600 dark:text-gray-400">
                           <span x-text="item.tags.map(item => item.tag).join(', ')"></span>
@@ -89,21 +87,22 @@
                     </div>
                   </td>
                   <td class="px-4 py-3 text-xs">
-                    <span x-text="item.project.title"></span>
+                    <p
+                      class="text-lg"
+                      x-text="item.project.title"
+                    ></p>
+                    <p
+                      style="margin: 7px 0"
+                      x-text="item.customer_display"
+                    ></p>
                   </td>
                   <td class="px-4 py-3 text-xs">
-                    <span x-text="item.customer_display"></span>
+                    <span x-text="item.start_time?.substring(0,5)"></span>
                   </td>
                   <td class="px-4 py-3 text-xs">
-                    <span x-text="item.issue.title"></span>
+                    <span x-text="item.end_time?.substring(0,5)"></span>
                   </td>
-                  <td class="px-4 py-3 text-xs">
-                    <span x-text="item.start_time.substring(0,5)"></span>
-                  </td>
-                  <td class="px-4 py-3 text-xs">
-                    <span x-text="item.end_time.substring(0,5)"></span>
-                  </td>
-                  <!-- <td class="px-4 py-3 text-xs">
+                <!-- <td class="px-4 py-3 text-xs">
                     <span
                       class="px-2 py-1 font-semibold leading-tight rounded-full dark:bg-green-700 dark:text-green-100"
                       :class="{'text-green-700' : item.repository_name == 'gh', 'bg-green-100' : item.repository_name == 'gh', 'text-orange-700' : item.repository_name == 'gl', 'bg-orange-100' : item.repository_name == 'gl', 'text-blue-700' : item.repository_name == 'gl', 'bg-blue-100' : item.repository_name == 'b'}"
@@ -113,7 +112,7 @@
                   <td class="px-4 py-3 text-xs">
                     <span x-text="item.status_display"></span>
                   </td>
-                  <!-- <td class="px-4 py-3 text-xs">
+                <!-- <td class="px-4 py-3 text-xs">
                     <span
                       class="px-2 py-1 font-semibold leading-tight text-green-700 bg-green-100 rounded-full dark:bg-green-700 dark:text-green-100"
                       :class="{'text-green-700' : item.active, 'bg-green-100' : item.active, 'text-red-700' : !item.active, 'bg-red-100' : !item.active}"
