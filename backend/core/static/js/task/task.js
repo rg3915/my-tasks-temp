@@ -100,8 +100,13 @@ const getItems = () => ({
   },
 
   stopTask(item) {
-    (item ? item : this.editItem).started = true
-    console.log(item)
+    const slug = item ? item.slug : this.editItem.slug
+    axios.get(`${url}${slug}/stop/`, { headers: headers })
+      .then(response => {
+        if (response.data.success) {
+          (item ? item : this.editItem).started = false
+        }
+      })
   },
 
 })

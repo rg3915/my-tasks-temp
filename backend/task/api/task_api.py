@@ -5,6 +5,7 @@ from ninja import ModelSchema, Router
 from ninja.orm import create_schema
 
 from backend.core.management.commands.start_task import start_task_command
+from backend.core.management.commands.stop_task import stop_task_command
 from backend.task.models import Tag, Task
 
 router = Router(tags=['Tasks'])
@@ -88,5 +89,19 @@ def start_task_api(request, slug: str, previous_hour: bool):
     )
 
     response = start_task_command(options)
+
+    return {'success': response}
+
+
+@router.get('task/{slug}/stop/')
+def stop_task_api(request, slug: str):
+    task = get_object_or_404(Task, slug=slug)
+
+    options = dict(
+        project=task.project.title,
+        task=task.issue.number,
+    )
+
+    response = stop_task_command(options)
 
     return {'success': response}

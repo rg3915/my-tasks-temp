@@ -169,6 +169,17 @@ def create_timesheet(task, previous_hour):
     Timesheet.objects.create(task=task, start_time=start_time)
 
 
+def stop_timesheet(task):
+    now = datetime.now()
+
+    print(datetime_to_string(now, '%H:%M'))
+
+    # Na verdade não precisa da task.
+    timesheet = Timesheet.objects.filter(task=task, end_time__isnull=True).first()
+    timesheet.end_time = now
+    timesheet.save()
+
+
 def create_gitlab_issue(args):
     '''
     Requer /etc/rg3915.cfg
