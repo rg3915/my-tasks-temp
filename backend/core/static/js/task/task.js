@@ -19,7 +19,9 @@ const getItems = () => ({
 
   getData() {
     axios(url)
-      .then(response => this.filteredItems = response.data)
+      .then(response => {
+        this.filteredItems = response.data.map(item => ({ ...item, previous_hour: false }))
+      })
 
     // this.$watch('editItem.project', (newValue, oldValue) => {
     //   if (newValue) this.get_issues(newValue)
@@ -88,8 +90,18 @@ const getItems = () => ({
   startTask(item) {
     const slug = item ? item.slug : this.editItem.slug
     const previousHour = item ? item.previous_hour : this.editItem.previous_hour
+
     axios.get(`${url}${slug}/start/?previous_hour=${previousHour}`, { headers: headers })
-      .then(response => console.log(response.data.success))
+      .then(response => {
+        if (response.data.success) {
+          (item ? item : this.editItem).started = true
+        }
+      })
+  },
+
+  stopTask(item) {
+    (item ? item : this.editItem).started = true
+    console.log(item)
   },
 
 })
