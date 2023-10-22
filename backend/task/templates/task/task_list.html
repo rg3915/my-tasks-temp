@@ -48,8 +48,6 @@
               <tr class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b dark:border-gray-700 bg-gray-50 dark:text-gray-400 dark:bg-gray-800">
                 <th class="px-4 py-3">Título</th>
                 <th class="px-4 py-3">Projeto</th>
-                <th class="px-4 py-3">Início</th>
-                <th class="px-4 py-3">Fim</th>
                 <th class="px-4 py-3">Status</th>
                 <th class="px-4 py-3">Ações</th>
               </tr>
@@ -95,12 +93,6 @@
                       style="margin: 7px 0"
                       x-text="item.customer_display"
                     ></p>
-                  </td>
-                  <td class="px-4 py-3 text-xs">
-                    <span x-text="item.start_time?.substring(0,5)"></span>
-                  </td>
-                  <td class="px-4 py-3 text-xs">
-                    <span x-text="item.end_time?.substring(0,5)"></span>
                   </td>
                 <!-- <td class="px-4 py-3 text-xs">
                     <span

@@ -29,3 +29,11 @@ python contrib/env_gen.py
 python manage.py migrate
 python manage.py createsuperuser
 ```
+
+### Sobre o git config
+
+```
+git config user.name rg3915
+git config user.email *************100@*****.com
+```
+

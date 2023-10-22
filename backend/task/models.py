@@ -126,8 +126,6 @@ class Task(TimeStampedModel, UuidModel):
     status = models.CharField(max_length=2, choices=STATUS, default='o')
     annotation = models.TextField(null=True, blank=True)
     report = models.TextField(null=True, blank=True)
-    start_time = models.TimeField(null=True, blank=True)
-    end_time = models.TimeField(null=True, blank=True)
     estimate = models.DecimalField(max_digits=7, decimal_places=2, null=True, blank=True)
 
     class Meta:
@@ -148,3 +146,19 @@ class Task(TimeStampedModel, UuidModel):
 
     def get_tags(self):
         return self.tags.all()
+
+
+class Timesheet(TimeStampedModel, UuidModel):
+    task = models.ForeignKey(
+        Task,
+        on_delete=models.CASCADE,
+        related_name='timesheets',
+    )
+    start_time = models.DateTimeField(null=True, blank=True)
+    end_time = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ('-created',)
+
+    def __str__(self):
+        return f'{self.task.issue.number} - {self.task.title}'

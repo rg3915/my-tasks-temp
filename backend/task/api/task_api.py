@@ -29,8 +29,6 @@ class TaskSchemaIn(ModelSchema):
             'tags',
             'annotation',
             'report',
-            'start_time',
-            'end_time',
             'estimate',
         )
 
@@ -60,7 +58,6 @@ def create_task(request, payload: TaskSchemaIn):
 
 @router.patch('task/{slug}/', response=TaskSchema)
 def update_task(request, slug: str, payload: TaskSchemaIn):
-    # teste
     instance = get_object_or_404(Task, slug=slug)
     data = payload.dict()
 

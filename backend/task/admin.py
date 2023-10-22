@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 from .forms import LabelForm
-from .models import Issue, Label, Milestone, Sprint, Tag, Task
+from .models import Issue, Label, Milestone, Sprint, Tag, Task, Timesheet
 
 
 @admin.register(Tag)
@@ -48,10 +48,24 @@ class IssueAdmin(admin.ModelAdmin):
         return ','.join(obj.labels.values_list('label', flat=True))
 
 
+class TimesheetInline(admin.TabularInline):
+    model = Timesheet
+    extra = 0
+
+
 @admin.register(Task)
 class TaskAdmin(admin.ModelAdmin):
-    list_display = ('__str__', 'project', 'issue', 'status', 'start_time', 'end_time')
-    readonly_fields = ('slug',)
+    inlines = (TimesheetInline,)
+    list_display = ('__str__', 'project', 'issue', 'status')
+    readonly_fields = ('slug', 'created', 'modified')
     search_fields = ('title',)
     list_filter = ('status', 'tags')
+    date_hierarchy = 'created'
+
+
+@admin.register(Timesheet)
+class TimesheetAdmin(admin.ModelAdmin):
+    list_display = ('__str__', 'start_time', 'end_time')
+    readonly_fields = ('slug', 'created', 'modified')
+    search_fields = ('task__title',)
     date_hierarchy = 'created'
