@@ -60,7 +60,7 @@ const getItems = () => ({
   },
 
   saveData() {
-    if (!this.editItem.pk) {
+    if (!this.editItem.slug) {
       // Adiciona
       const { project: ignoredProject, issue: ignoredIssue, ...bodyData } = { ...this.editItem, project_id: this.editItem.project, issue_id: this.editItem.issue }
       axios.post(url, bodyData, { headers: headers })
@@ -70,10 +70,10 @@ const getItems = () => ({
         })
     } else {
       // Edita
-      const pk = this.editItem.pk
-      // Remove o pk e associa o restante a bodyData
-      const { pk: _, project: ignoredProject, issue: ignoredIssue, ...bodyData } = { ...this.editItem, project_id: this.editItem.project, issue_id: this.editItem.issue }
-      axios.patch(`${url}${pk}/`, bodyData, { headers: headers })
+      const slug = this.editItem.slug
+      // Remove o slug e associa o restante a bodyData
+      const { slug: _, project: ignoredProject, issue: ignoredIssue, ...bodyData } = { ...this.editItem, project_id: this.editItem.project, issue_id: this.editItem.issue }
+      axios.patch(`${url}${slug}/`, bodyData, { headers: headers })
         .then(response => {
           const items = [...this.filteredItems]
           const index = items.findIndex(p => p.pk == response.data.pk)

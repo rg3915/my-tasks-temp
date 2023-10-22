@@ -64,13 +64,13 @@ class TaskForm(forms.ModelForm):
         fields = (
             'title',
             'project',
-            'tags',
             'issue',
+            'tags',
             'annotation',
-            'report',
             'start_time',
             'end_time',
             'estimate',
+            'report',
         )
 
     def __init__(self, *args, **kwargs):

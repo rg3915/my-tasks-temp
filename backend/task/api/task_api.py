@@ -56,3 +56,23 @@ def create_task(request, payload: TaskSchemaIn):
             task.tags.add(tag)
 
     return task
+
+
+@router.patch('task/{slug}/', response=TaskSchema)
+def update_task(request, slug: str, payload: TaskSchemaIn):
+    instance = get_object_or_404(Task, slug=slug)
+    data = payload.dict()
+
+    tags = None
+    if 'tags' in data:
+        tags = data.pop('tags')
+
+        for pk in tags:
+            tag = get_object_or_404(Tag, pk=pk)
+            instance.tags.add(tag)
+
+    for attr, value in data.items():
+        setattr(instance, attr, value)
+
+    instance.save()
+    return instance
