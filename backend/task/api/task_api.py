@@ -4,6 +4,7 @@ from django.shortcuts import get_object_or_404
 from ninja import ModelSchema, Router
 from ninja.orm import create_schema
 
+from backend.core.management.commands.start_task import start_task_command
 from backend.task.models import Tag, Task
 
 router = Router(tags=['Tasks'])
@@ -74,3 +75,18 @@ def update_task(request, slug: str, payload: TaskSchemaIn):
 
     instance.save()
     return instance
+
+
+@router.get('task/{slug}/start/')
+def start_task_api(request, slug: str, previous_hour: bool):
+    task = get_object_or_404(Task, slug=slug)
+
+    options = dict(
+        project=task.project.title,
+        task=task.issue.number,
+        previous_hour=previous_hour,
+    )
+
+    response = start_task_command(options)
+
+    return {'success': response}

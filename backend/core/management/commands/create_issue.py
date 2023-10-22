@@ -42,7 +42,9 @@ def create_issue(options):
 
 
 class Command(BaseCommand):
-    help = "Create issue."
+    help = 'Create issue.'
+
+    # TODO: dá pra remover o command?
 
     def add_arguments(self, parser):
         parser.add_argument('--project', '-p', type=str, help='Type the name of project.')

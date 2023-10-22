@@ -55,6 +55,7 @@ const getItems = () => ({
 
   getItem(item) {
     this.editItem = { ...item }
+    this.editItem.previous_hour = false
     this.isEdit = true
     // this.open()
   },
@@ -83,4 +84,12 @@ const getItems = () => ({
         })
     }
   },
+
+  startTask(item) {
+    const slug = item ? item.slug : this.editItem.slug
+    const previousHour = item ? item.previous_hour : this.editItem.previous_hour
+    axios.get(`${url}${slug}/start/?previous_hour=${previousHour}`, { headers: headers })
+      .then(response => console.log(response.data.success))
+  },
+
 })
