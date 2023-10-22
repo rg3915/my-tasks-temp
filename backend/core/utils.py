@@ -107,8 +107,14 @@ def write_changelog_dropbox(issue):
 
     check_if_the_date_already_exists(filename, issue.milestone.title)
 
-    with open(filename, 'a') as f:
-        f.write(f'* {issue.title}. #{issue.number}\n')
+    text = f'* {issue.title}. #{issue.number}\n'
+
+    with open(filename, 'r') as f:
+        content = f.read()
+        # Escreve somente se o texto não existir.
+        if text not in content:
+            with open(filename, 'a') as f:
+                f.write(text)
 
 
 def save_issue(data):
@@ -140,7 +146,6 @@ def save_issue(data):
         is_bug = True
 
     write_on_tarefas(filename, issue, data['labels'], is_bug)
-    write_changelog_dropbox(issue)
     return issue
 
 
