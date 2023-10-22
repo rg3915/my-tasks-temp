@@ -21,9 +21,9 @@ const getItems = () => ({
     axios(url)
       .then(response => this.filteredItems = response.data)
 
-    this.$watch('editItem.project', (newValue, oldValue) => {
-      if (newValue) this.get_issues(newValue)
-    })
+    // this.$watch('editItem.project', (newValue, oldValue) => {
+    //   if (newValue) this.get_issues(newValue)
+    // })
 
   },
 
@@ -56,7 +56,7 @@ const getItems = () => ({
   getItem(item) {
     this.editItem = { ...item }
     this.isEdit = true
-    // myModal.open()
+    // this.open()
   },
 
   saveData() {
@@ -72,7 +72,7 @@ const getItems = () => ({
       // Edita
       const pk = this.editItem.pk
       // Remove o pk e associa o restante a bodyData
-      const { pk: _, ...bodyData } = this.editItem
+      const { pk: _, project: ignoredProject, issue: ignoredIssue, ...bodyData } = { ...this.editItem, project_id: this.editItem.project, issue_id: this.editItem.issue }
       axios.patch(`${url}${pk}/`, bodyData, { headers: headers })
         .then(response => {
           const items = [...this.filteredItems]

@@ -60,24 +60,21 @@
         {% for field in form.visible_fields %}
           <label class="block text-sm mt-2">
             <span class="text-gray-700 dark:text-gray-400">{{ field.label }}</span>
-            {% if field.label == 'Project' or field.label == 'Status' %}
+            {% if field.label == 'Project' or field.label == 'Status' or field.label == 'Issue' %}
               {% render_field field class="block w-full mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-select focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:focus:shadow-outline-gray" placeholder=field.help_text %}
-            {% elif field.label == 'Issue' %}
+            <!-- { elif field.label == 'Issue' %}
               <select
                 class="block w-full mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-select focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:focus:shadow-outline-gray"
                 x-model="editItem.issue"
               >
                 <option value="">Selecione uma Issue</option>
-                <template
-                  x-for="issue in editItem.issue"
-                  :key="issue.id"
-                >
+                <template x-for="issue in editItem?.issue">
                   <option
-                    :value="issue.id"
-                    x-text="issue.title"
+                    :value="issue?.id"
+                    x-text="issue?.title"
                   ></option>
                 </template>
-              </select>
+              </select> -->
             {% else %}
               {% render_field field class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input" placeholder=field.help_text %}
             {% endif %}

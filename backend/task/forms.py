@@ -76,7 +76,7 @@ class TaskForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.fields['issue'].queryset = Issue.objects.none()
+        # self.fields['issue'].queryset = Issue.objects.none()
 
         for field_name, field in self.fields.items():
             field.widget.attrs['x-model'] = f'editItem.{field_name}'
