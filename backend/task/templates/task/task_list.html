@@ -119,6 +119,7 @@
                         class="text-green-500"
                         @click="startTask(item)"
                         x-show="!item.started"
+                        :disabled="isRunning"
                       >
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
@@ -148,6 +149,10 @@
                           Hora anterior
                         </span> -->
                       </label>
+                      <span
+                        x-show="item.started"
+                        x-text="formatTime(seconds)"
+                      ></span>
                     <!-- Stop -->
                       <button
                         class="text-red-600"

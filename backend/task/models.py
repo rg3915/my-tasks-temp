@@ -162,3 +162,8 @@ class Timesheet(TimeStampedModel, UuidModel):
 
     def __str__(self):
         return f'{self.task.issue.number} - {self.task.title}'
+
+    def get_hour(self):
+        if self.end_time and self.start_time:
+            return self.end_time - self.start_time
+        return 0

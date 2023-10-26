@@ -13,6 +13,10 @@ const getItems = () => ({
   editItem: {},
   isEdit: false,
 
+  seconds: 0,
+  isRunning: false, // usado para desabilitar todos os outros play
+  timerInterval: null,
+
   init() {
     this.getData()
   },
@@ -20,7 +24,7 @@ const getItems = () => ({
   getData() {
     axios(url)
       .then(response => {
-        this.filteredItems = response.data.map(item => ({ ...item, previous_hour: false }))
+        this.filteredItems = response.data.map(item => ({ ...item, previous_hour: false, started: false, }))
       })
 
     // this.$watch('editItem.project', (newValue, oldValue) => {
@@ -62,6 +66,33 @@ const getItems = () => ({
     // this.open()
   },
 
+  startTimer(item) {
+    this.timerInterval = setInterval(() => {
+      this.seconds++
+    }, 1000)
+    item.started = true
+    this.isRunning = true
+  },
+
+  stopTimer(item) {
+    clearInterval(this.timerInterval)
+    item.started = false
+    this.isRunning = false
+    this.seconds = 0
+  },
+
+  resetTimer() {
+    this.seconds = 0
+    this.stopTimer()
+  },
+
+  formatTime(seconds) {
+    const hours = String(Math.floor(seconds / 3600)).padStart(2, '0')
+    const minutes = String(Math.floor((seconds % 3600) / 60)).padStart(2, '0')
+    const remainingSeconds = String(seconds % 60).padStart(2, '0')
+    return `${hours}:${minutes}:${remainingSeconds}`
+  },
+
   saveData() {
     if (!this.editItem.slug) {
       // Adiciona
@@ -96,6 +127,7 @@ const getItems = () => ({
         if (response.data.success) {
           (item ? item : this.editItem).started = true
         }
+        this.startTimer(item)
       })
   },
 
@@ -106,6 +138,7 @@ const getItems = () => ({
         if (response.data.success) {
           (item ? item : this.editItem).started = false
         }
+        this.stopTimer(item)
       })
   },
 

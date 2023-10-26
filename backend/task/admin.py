@@ -65,7 +65,7 @@ class TaskAdmin(admin.ModelAdmin):
 
 @admin.register(Timesheet)
 class TimesheetAdmin(admin.ModelAdmin):
-    list_display = ('__str__', 'start_time', 'end_time')
+    list_display = ('__str__', 'start_time', 'end_time', 'get_hour')
     readonly_fields = ('slug', 'created', 'modified')
     search_fields = ('task__title',)
     date_hierarchy = 'created'
