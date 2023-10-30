@@ -127,6 +127,7 @@ const getItems = () => ({
         if (response.data.success) {
           (item ? item : this.editItem).started = true
         }
+        item.start_time = response.data.start_time
         this.startTimer(item)
       })
   },

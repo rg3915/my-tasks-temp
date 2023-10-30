@@ -7,9 +7,9 @@ from django.core.management.base import BaseCommand
 from rich import print
 from rich.console import Console
 
-from backend.core.utils import stop_timesheet
+from backend.core.services import stop_timesheet
 from backend.project.models import Project
-from backend.task.models import Task, Timesheet
+from backend.task.models import Task
 
 console = Console()
 

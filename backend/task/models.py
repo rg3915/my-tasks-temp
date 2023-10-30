@@ -1,6 +1,9 @@
+from datetime import timedelta
+
 from django.db import models
 
 from backend.core.models import TimeStampedModel, UuidModel
+from backend.core.utils import datetime_to_string
 from backend.project.models import Project
 
 
@@ -162,6 +165,10 @@ class Timesheet(TimeStampedModel, UuidModel):
 
     def __str__(self):
         return f'{self.task.issue.number} - {self.task.title}'
+
+    @property
+    def start_time_display(self):
+        return datetime_to_string(self.start_time - timedelta(hours=3), '%H:%M')
 
     def get_hour(self):
         if self.end_time and self.start_time:

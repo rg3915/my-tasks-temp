@@ -7,7 +7,7 @@ from django.core.management.base import BaseCommand
 from rich import print
 from rich.console import Console
 
-from backend.core.utils import create_timesheet, write_changelog_dropbox
+from backend.core.services import create_timesheet, write_changelog_dropbox
 from backend.project.models import Project
 from backend.task.models import Task, Timesheet
 
@@ -16,7 +16,10 @@ console = Console()
 warnings.filterwarnings('ignore')
 
 
-def start_task_command(options) -> bool:
+def start_task_command(options):
+    '''
+    Return a tuple.
+    '''
     # get project
     project = Project.objects.filter(title=options['project']).first()
 
@@ -33,12 +36,12 @@ def start_task_command(options) -> bool:
     if timesheet_not_finalized:
         print(f'Task: {task.issue.number} - {task}')
         console.print('Error: Existe uma tarefa não finalizada.', style='red')
-        return False
+        return False, None
     else:
         print(f'Start issue: {task.issue.number} - {task}')
-        create_timesheet(task, options['previous_hour'])
+        timesheet = create_timesheet(task, options['previous_hour'])
         write_changelog_dropbox(task.issue)
-        return True
+        return True, timesheet
 
 
 class Command(BaseCommand):

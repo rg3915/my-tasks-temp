@@ -88,9 +88,9 @@ def start_task_api(request, slug: str, previous_hour: bool):
         previous_hour=previous_hour,
     )
 
-    response = start_task_command(options)
+    status, timesheet = start_task_command(options)
 
-    return {'success': response}
+    return {'start_time': timesheet.start_time_display, 'success': status}
 
 
 @router.get('task/{slug}/stop/')
