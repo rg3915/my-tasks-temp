@@ -159,6 +159,17 @@
             Hora anterior
           </span> -->
         </label>
+        <span
+          class="text-white"
+          x-show="editItem.started"
+          class="text-white"
+          x-text="editItem.start_time"
+        ></span>
+        <span
+          class="text-white"
+          x-show="editItem.started"
+          x-text="formatTime(seconds)"
+        ></span>
         <!-- Stop -->
         <button
           class="text-red-600"

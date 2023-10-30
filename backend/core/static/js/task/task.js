@@ -121,25 +121,28 @@ const getItems = () => ({
   startTask(item) {
     const slug = item ? item.slug : this.editItem.slug
     const previousHour = item ? item.previous_hour : this.editItem.previous_hour
+    const targetItem = item ? item : this.editItem
 
     axios.get(`${url}${slug}/start/?previous_hour=${previousHour}`, { headers: headers })
       .then(response => {
         if (response.data.success) {
-          (item ? item : this.editItem).started = true
+          targetItem.started = true
         }
-        item.start_time = response.data.start_time
-        this.startTimer(item)
+        targetItem.start_time = response.data.start_time
+        this.startTimer(targetItem)
       })
   },
 
   stopTask(item) {
     const slug = item ? item.slug : this.editItem.slug
+    const targetItem = item ? item : this.editItem
+
     axios.get(`${url}${slug}/stop/`, { headers: headers })
       .then(response => {
         if (response.data.success) {
-          (item ? item : this.editItem).started = false
+          targetItem.started = false
         }
-        this.stopTimer(item)
+        this.stopTimer(targetItem)
       })
   },
 

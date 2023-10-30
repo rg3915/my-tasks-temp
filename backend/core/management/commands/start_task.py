@@ -19,6 +19,7 @@ warnings.filterwarnings('ignore')
 def start_task_command(options):
     '''
     Return a tuple.
+    timesheet_not_finalized, previous_hour, timesheet
     '''
     # get project
     project = Project.objects.filter(title=options['project']).first()
@@ -36,12 +37,17 @@ def start_task_command(options):
     if timesheet_not_finalized:
         print(f'Task: {task.issue.number} - {task}')
         console.print('Error: Existe uma tarefa não finalizada.', style='red')
-        return False, None
+        return False, False, None
     else:
         print(f'Start issue: {task.issue.number} - {task}')
         timesheet = create_timesheet(task, options['previous_hour'])
+
         write_changelog_dropbox(task.issue)
-        return True, timesheet
+
+        if options['previous_hour']:
+            return True, True, timesheet
+
+        return True, False, timesheet
 
 
 class Command(BaseCommand):

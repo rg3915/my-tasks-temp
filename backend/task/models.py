@@ -168,6 +168,10 @@ class Timesheet(TimeStampedModel, UuidModel):
 
     @property
     def start_time_display(self):
+        return datetime_to_string(self.start_time, '%H:%M')
+
+    @property
+    def start_time_display_fixed_hour(self):
         return datetime_to_string(self.start_time - timedelta(hours=3), '%H:%M')
 
     def get_hour(self):
