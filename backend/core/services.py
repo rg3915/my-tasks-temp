@@ -1,5 +1,6 @@
 import json
 import os
+from collections import defaultdict
 from datetime import date, datetime, timedelta
 
 import gitlab
@@ -182,12 +183,46 @@ def create_gitlab_issue(args):
     return data
 
 
+def group_by_date(project):
+    '''
+    Agrupa os dados por dia.
+    '''
+    timesheet_data = Timesheet.objects.filter(task__project__title=project).values(
+        'start_time__date',
+        'task__issue__number',
+        'start_time',
+        'end_time',
+    )
+
+    # Create a dictionary to store the total hours and issues for each date
+    result_dict = defaultdict(lambda: {'total_hours': timedelta(), 'issues': set()})
+
+    for timesheet in timesheet_data:
+        date_only = timesheet['start_time'].date()
+        total_hours = timesheet['end_time'] - timesheet['start_time']
+        issues = timesheet['task__issue__number']
+        result_dict[date_only]['total_hours'] += total_hours
+        result_dict[date_only]['issues'].add(issues)
+
+    # Convert the dictionary to the desired output format
+    output = [
+        {
+            'date': key,
+            'total_hours': str(value['total_hours']),
+            'issues': ', '.join(map(str, value['issues']))
+        }
+        for key, value in result_dict.items()
+    ]
+
+    print(output)
+
+
 def export_timesheet_service(project):
     tasks = project.get_tasks()
 
     customer = project.customer.name
     project = project.title
-    timesheet_filename = f'{FOLDER_BASE}/{customer}/{project}/timesheet_teste.xlsx'
+    timesheet_filename = f'{FOLDER_BASE}/{customer}/{project}/timesheet_teste_{project}.xlsx'
 
     try:
         wb = load_workbook(timesheet_filename)
@@ -232,3 +267,5 @@ def export_timesheet_service(project):
             new_row += 1
 
     wb.save(timesheet_filename)
+
+    group_by_date(project)
