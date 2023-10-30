@@ -145,7 +145,7 @@ def create_gitlab_issue(args):
     '''
     gl = gitlab.Gitlab.from_config('somewhere', ['/etc/rg3915.cfg'])
 
-    command, title, body, labels, project, milestone = args.values()
+    title, body, labels, project, milestone = args.values()
 
     gl_project = gl.projects.get(project.gitlab_project_id)
 

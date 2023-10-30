@@ -1,7 +1,6 @@
 '''
 m create_issue \
 --project='my-tasks' \
---command='create' \
 --title='Criar issue' \
 --body='Criar issue por linha de comando.' \
 --labels='backend' \
@@ -20,7 +19,6 @@ warnings.filterwarnings('ignore')
 
 def create_issue(options):
     args = dict(
-        command=options['command'],
         title=options['title'],
         body=options['body'],
         labels=options['labels'],
@@ -44,11 +42,8 @@ def create_issue(options):
 class Command(BaseCommand):
     help = 'Create issue.'
 
-    # TODO: dá pra remover o command?
-
     def add_arguments(self, parser):
         parser.add_argument('--project', '-p', type=str, help='Type the name of project.')
-        parser.add_argument('--command', '-c', type=str, help='start, create, end.')
         parser.add_argument('--title', '-t', type=str, help='Type the title.')
         parser.add_argument('--body', '-b', type=str, help='Type the description.')
         parser.add_argument('--labels', '-l', type=str, help='Type the labels.')
