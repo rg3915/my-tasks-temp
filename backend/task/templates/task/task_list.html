@@ -153,6 +153,9 @@
                         x-show="item.started"
                         x-text="item.start_time"
                       ></span>
+                      <span x-text="item.last_timesheet_dict?.start_time"></span>
+                      <span x-text="item.last_timesheet_dict?.end_time"></span>
+                      <span x-text="item.last_timesheet_dict?.get_hour"></span>
                       <span
                         x-show="item.started"
                         x-text="formatTime(seconds)"

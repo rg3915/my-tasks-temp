@@ -150,6 +150,13 @@ class Task(TimeStampedModel, UuidModel):
     def get_tags(self):
         return self.tags.all()
 
+    def get_timesheets(self):
+        return self.timesheets.all()
+
+    def last_timesheet_dict(self):
+        if self.timesheets.first():
+            return self.timesheets.first().to_dict()
+
 
 class Timesheet(TimeStampedModel, UuidModel):
     task = models.ForeignKey(
@@ -178,3 +185,10 @@ class Timesheet(TimeStampedModel, UuidModel):
         if self.end_time and self.start_time:
             return self.end_time - self.start_time
         return 0
+
+    def to_dict(self):
+        return {
+            'start_time': datetime_to_string(self.start_time - timedelta(hours=3), '%H:%M'),
+            'end_time': datetime_to_string(self.end_time - timedelta(hours=3), '%H:%M'),
+            'get_hour': str(self.get_hour()).split('.')[0]
+        }
