@@ -175,16 +175,46 @@ class Timesheet(TimeStampedModel, UuidModel):
 
     @property
     def start_time_display(self):
-        return datetime_to_string(self.start_time, '%H:%M')
+        if self.start_time:
+            return datetime_to_string(self.start_time, '%H:%M:%S')
+
+    @property
+    def date_from_start_time_display(self):
+        if self.start_time:
+            return datetime_to_string(self.start_time, '%d/%m/%y')
 
     @property
     def start_time_display_fixed_hour(self):
         return datetime_to_string(self.start_time - timedelta(hours=3), '%H:%M')
 
+    @property
+    def end_time_display(self):
+        if self.end_time:
+            return datetime_to_string(self.end_time, '%H:%M:%S')
+
     def get_hour(self):
         if self.end_time and self.start_time:
             return self.end_time - self.start_time
         return 0
+
+    def get_hour_display(self):
+        if self.end_time and self.start_time:
+            time_diff = self.end_time - self.start_time
+            hours, remainder = divmod(time_diff.total_seconds(), 3600)
+            minutes = divmod(remainder, 60)
+            time_str = ''
+
+            if hours:
+                time_str += f'{int(hours)}h '
+
+            if minutes[0]:
+                time_str += f'{int(minutes[0])}m'
+
+            if not time_str:
+                return '0'
+
+            return time_str.strip()
+        return '0'
 
     def to_dict(self):
         return {

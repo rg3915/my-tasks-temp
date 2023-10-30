@@ -4,6 +4,7 @@ from datetime import date, datetime, timedelta
 
 import gitlab
 from decouple import config
+from openpyxl import Workbook, load_workbook, styles
 from rich import print
 
 from backend.core.utils import datetime_to_string
@@ -179,3 +180,55 @@ def create_gitlab_issue(args):
     data['milestone'] = milestone
 
     return data
+
+
+def export_timesheet_service(project):
+    tasks = project.get_tasks()
+
+    customer = project.customer.name
+    project = project.title
+    timesheet_filename = f'{FOLDER_BASE}/{customer}/{project}/timesheet_teste.xlsx'
+
+    try:
+        wb = load_workbook(timesheet_filename)
+        ws = wb['timesheet']
+    except FileNotFoundError:
+        wb = Workbook()
+        ws = wb.create_sheet('timesheet')
+        wb.save(timesheet_filename)
+
+    new_row = 2
+
+    labels = (
+        'data',
+        'hora_inicial',
+        'hora_final',
+        'tempo',
+        'tempo_display',
+        'issue',
+        'title'
+    )
+
+    bold_calibri = styles.Font(bold=True, name='Calibri')
+
+    # Set labels and apply font in a loop
+    for col, label in enumerate(labels, start=1):
+        cell = ws.cell(row=1, column=col, value=label)
+        cell.font = bold_calibri
+
+    for task in tasks:
+        for timesheet in task.get_timesheets():
+            ws.cell(row=new_row, column=1, value=timesheet.date_from_start_time_display)
+            ws.cell(row=new_row, column=2, value=timesheet.start_time_display)
+            ws.cell(row=new_row, column=3, value=timesheet.end_time_display)
+            ws.cell(row=new_row, column=4, value=timesheet.get_hour())
+            ws.cell(row=new_row, column=5, value=timesheet.get_hour_display())
+
+            cell = ws.cell(row=new_row, column=6, value=timesheet.task.issue.number)
+            cell.alignment = styles.Alignment(horizontal='center')
+
+            ws.cell(row=new_row, column=7, value=timesheet.task.issue.title)
+
+            new_row += 1
+
+    wb.save(timesheet_filename)
