@@ -228,7 +228,7 @@ def group_by_date(project):
         {
             'date': datetime_to_string(key, '%d/%m/%y'),
             'month': key.month,
-            'total_hours': timedelta_to_string(value['total_hours']),
+            'total_hours': value['total_hours'],
             'total_hours_display': str(get_hour_display(value['total_hours'])),
             'issues': ', '.join(map(str, value['issues'])),
             'sprint': value['sprint'],
@@ -239,9 +239,69 @@ def group_by_date(project):
     return output
 
 
-def write_total_hours_on_timesheet_file(customer, project, total_hours):
-    timesheet_filename = f'{FOLDER_BASE}/{customer}/{project}/timesheet_teste_{project}.xlsx'
+def group_by_month(project):
+    '''
+    Agrupa os dados por mês.
+    '''
+    timesheet_data = Timesheet.objects.filter(task__project__title=project).values(
+        'start_time__month',
+        'start_time',
+        'end_time',
+    ).order_by('start_time')
 
+    # Create a dictionary to store the total hours and issues for each date
+    result_dict = defaultdict(lambda: {'total_hours': timedelta(), 'issues': set()})
+
+    for timesheet in timesheet_data:
+        date_only = timesheet['start_time__month']
+        total_hours = timesheet['end_time'] - timesheet['start_time']
+        result_dict[date_only]['total_hours'] += total_hours
+
+    # Convert the dictionary to the desired output format
+    output = [
+        {
+            'month': key,
+            'total_hours': value['total_hours'],
+            'total_hours_display': str(get_hour_display(value['total_hours'])),
+        }
+        for key, value in result_dict.items()
+    ]
+
+    return output
+
+
+def group_by_sprint(project):
+    '''
+    Agrupa os dados por sprint.
+    '''
+    timesheet_data = Timesheet.objects.filter(task__project__title=project).values(
+        'start_time',
+        'end_time',
+        'task__issue__sprint__number',
+    ).order_by('start_time')
+
+    # Create a dictionary to store the total hours and issues for each date
+    result_dict = defaultdict(lambda: {'total_hours': timedelta(), 'issues': set()})
+
+    for timesheet in timesheet_data:
+        date_only = timesheet['task__issue__sprint__number']
+        total_hours = timesheet['end_time'] - timesheet['start_time']
+        result_dict[date_only]['total_hours'] += total_hours
+
+    # Convert the dictionary to the desired output format
+    output = [
+        {
+            'sprint': key,
+            'total_hours': value['total_hours'],
+            'total_hours_display': str(get_hour_display(value['total_hours'])),
+        }
+        for key, value in result_dict.items()
+    ]
+
+    return output
+
+
+def write_total_hours_on_timesheet_file(timesheet_filename, total_hours):
     wb = load_workbook(timesheet_filename)
     try:
         ws = wb['total_hours']
@@ -278,6 +338,74 @@ def write_total_hours_on_timesheet_file(customer, project, total_hours):
 
         cell = ws.cell(row=new_row, column=6, value=item['sprint'])
         cell.alignment = styles.Alignment(horizontal='center')
+
+        new_row += 1
+
+    wb.save(timesheet_filename)
+
+
+def write_total_hours_by_month_on_timesheet_file(timesheet_filename, total_hours):
+    wb = load_workbook(timesheet_filename)
+    try:
+        ws = wb['total_hours']
+    except KeyError:
+        ws = wb.create_sheet('total_hours')
+
+    new_row = 2
+
+    labels = (
+        'mês',
+        'tempo',
+        'tempo_display',
+    )
+
+    bold_calibri = styles.Font(bold=True, name='Calibri')
+
+    # Set labels and apply font in a loop
+    for col, label in enumerate(labels, start=8):
+        cell = ws.cell(row=1, column=col, value=label)
+        cell.font = bold_calibri
+
+    for item in total_hours:
+        cell = ws.cell(row=new_row, column=8, value=item['month'])
+        cell.alignment = styles.Alignment(horizontal='center')
+
+        ws.cell(row=new_row, column=9, value=item['total_hours'])
+        ws.cell(row=new_row, column=10, value=item['total_hours_display'])
+
+        new_row += 1
+
+    wb.save(timesheet_filename)
+
+
+def write_total_hours_by_sprint_on_timesheet_file(timesheet_filename, total_hours):
+    wb = load_workbook(timesheet_filename)
+    try:
+        ws = wb['total_hours']
+    except KeyError:
+        ws = wb.create_sheet('total_hours')
+
+    new_row = 2
+
+    labels = (
+        'sprint',
+        'tempo',
+        'tempo_display',
+    )
+
+    bold_calibri = styles.Font(bold=True, name='Calibri')
+
+    # Set labels and apply font in a loop
+    for col, label in enumerate(labels, start=12):
+        cell = ws.cell(row=1, column=col, value=label)
+        cell.font = bold_calibri
+
+    for item in total_hours:
+        cell = ws.cell(row=new_row, column=12, value=item['sprint'])
+        cell.alignment = styles.Alignment(horizontal='center')
+
+        ws.cell(row=new_row, column=13, value=item['total_hours'])
+        ws.cell(row=new_row, column=14, value=item['total_hours_display'])
 
         new_row += 1
 
@@ -337,4 +465,12 @@ def export_timesheet_service(project):
 
     total_hours = group_by_date(project)
 
-    write_total_hours_on_timesheet_file(customer, project, total_hours)
+    write_total_hours_on_timesheet_file(timesheet_filename, total_hours)
+
+    total_hours = group_by_month(project)
+
+    write_total_hours_by_month_on_timesheet_file(timesheet_filename, total_hours)
+
+    total_hours = group_by_sprint(project)
+
+    write_total_hours_by_sprint_on_timesheet_file(timesheet_filename, total_hours)
