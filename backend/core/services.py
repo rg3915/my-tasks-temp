@@ -8,7 +8,7 @@ from decouple import config
 from openpyxl import Workbook, load_workbook, styles
 from rich import print
 
-from backend.core.utils import datetime_to_string
+from backend.core.utils import datetime_to_string, timedelta_to_string
 from backend.task.models import Issue, Label, Sprint, Task, Timesheet
 
 FOLDER_BASE = '/home/regis/Dropbox/projetos'
@@ -183,6 +183,23 @@ def create_gitlab_issue(args):
     return data
 
 
+def get_hour_display(_time):
+    hours, remainder = divmod(_time.total_seconds(), 3600)
+    minutes = divmod(remainder, 60)
+    time_str = ''
+
+    if hours:
+        time_str += f'{int(hours)}h '
+
+    if minutes[0]:
+        time_str += f'{int(minutes[0])}m'
+
+    if not time_str:
+        return '0'
+
+    return time_str.strip()
+
+
 def group_by_date(project):
     '''
     Agrupa os dados por dia.
@@ -192,7 +209,8 @@ def group_by_date(project):
         'task__issue__number',
         'start_time',
         'end_time',
-    )
+        'task__issue__sprint__number',
+    ).order_by('start_time')
 
     # Create a dictionary to store the total hours and issues for each date
     result_dict = defaultdict(lambda: {'total_hours': timedelta(), 'issues': set()})
@@ -203,18 +221,67 @@ def group_by_date(project):
         issues = timesheet['task__issue__number']
         result_dict[date_only]['total_hours'] += total_hours
         result_dict[date_only]['issues'].add(issues)
+        result_dict[date_only]['sprint'] = timesheet['task__issue__sprint__number']
 
     # Convert the dictionary to the desired output format
     output = [
         {
-            'date': key,
-            'total_hours': str(value['total_hours']),
-            'issues': ', '.join(map(str, value['issues']))
+            'date': datetime_to_string(key, '%d/%m/%y'),
+            'month': key.month,
+            'total_hours': timedelta_to_string(value['total_hours']),
+            'total_hours_display': str(get_hour_display(value['total_hours'])),
+            'issues': ', '.join(map(str, value['issues'])),
+            'sprint': value['sprint'],
         }
         for key, value in result_dict.items()
     ]
 
-    print(output)
+    return output
+
+
+def write_total_hours_on_timesheet_file(customer, project, total_hours):
+    timesheet_filename = f'{FOLDER_BASE}/{customer}/{project}/timesheet_teste_{project}.xlsx'
+
+    wb = load_workbook(timesheet_filename)
+    try:
+        ws = wb['total_hours']
+    except KeyError:
+        ws = wb.create_sheet('total_hours')
+
+    new_row = 2
+
+    labels = (
+        'data',
+        'mês',
+        'tempo',
+        'tempo_display',
+        'issues',
+        'sprint',
+    )
+
+    bold_calibri = styles.Font(bold=True, name='Calibri')
+
+    # Set labels and apply font in a loop
+    for col, label in enumerate(labels, start=1):
+        cell = ws.cell(row=1, column=col, value=label)
+        cell.font = bold_calibri
+
+    for item in total_hours:
+        ws.cell(row=new_row, column=1, value=item['date'])
+
+        cell = ws.cell(row=new_row, column=2, value=item['month'])
+        cell.alignment = styles.Alignment(horizontal='center')
+
+        ws.cell(row=new_row, column=3, value=item['total_hours'])
+        ws.cell(row=new_row, column=4, value=item['total_hours_display'])
+        ws.cell(row=new_row, column=5, value=item['issues'])
+
+        cell = ws.cell(row=new_row, column=6, value=item['sprint'])
+        cell.alignment = styles.Alignment(horizontal='center')
+
+        new_row += 1
+
+    wb.save(timesheet_filename)
 
 
 def export_timesheet_service(project):
@@ -241,7 +308,7 @@ def export_timesheet_service(project):
         'tempo',
         'tempo_display',
         'issue',
-        'title'
+        'titulo',
     )
 
     bold_calibri = styles.Font(bold=True, name='Calibri')
@@ -268,4 +335,6 @@ def export_timesheet_service(project):
 
     wb.save(timesheet_filename)
 
-    group_by_date(project)
+    total_hours = group_by_date(project)
+
+    write_total_hours_on_timesheet_file(customer, project, total_hours)

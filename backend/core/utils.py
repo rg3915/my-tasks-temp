@@ -1,4 +1,5 @@
 import sys
+from datetime import datetime, timedelta
 
 from faker import Faker
 
@@ -46,3 +47,17 @@ def datetime_to_string(value, format='%Y-%m-%d %H:%M:%S'):
     Transforma datetime em string no formato %Y-%m-%d %H:%M:%S.
     '''
     return value.strftime(format)
+
+
+def timedelta_to_string(value, format='%H:%M:%S'):
+    total_seconds = value.total_seconds()
+    hours, remainder = divmod(total_seconds, 3600)
+    minutes, seconds = divmod(remainder, 60)
+
+    if value.microseconds:
+        format_with_seconds = format + ':%f'
+        value_with_microseconds = timedelta(hours=hours, minutes=minutes, seconds=seconds, microseconds=value.microseconds)  # noqa E501
+        return datetime.strftime(datetime.strptime(str(value_with_microseconds), '%H:%M:%S.%f'), format_with_seconds)[:-3]  # noqa E501
+    else:
+        # format_without_seconds = format
+        return f"{int(hours):02d}:{int(minutes):02d}"
