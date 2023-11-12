@@ -8,7 +8,7 @@ from decouple import config
 from openpyxl import Workbook, load_workbook, styles
 from rich import print
 
-from backend.core.utils import datetime_to_string, timedelta_to_string
+from backend.core.utils import datetime_to_string
 from backend.task.models import Issue, Label, Sprint, Task, Timesheet
 
 FOLDER_BASE = '/home/regis/Dropbox/projetos'
@@ -239,28 +239,25 @@ def group_by_date(project):
     return output
 
 
-def group_by_month(project):
-    '''
-    Agrupa os dados por mês.
-    '''
+def group_data(project, group_by_field, key_field):
     timesheet_data = Timesheet.objects.filter(task__project__title=project).values(
-        'start_time__month',
         'start_time',
         'end_time',
+        group_by_field
     ).order_by('start_time')
 
-    # Create a dictionary to store the total hours and issues for each date
+    # Cria um dicionário para armazenar as horas totais e as issues por data.
     result_dict = defaultdict(lambda: {'total_hours': timedelta(), 'issues': set()})
 
     for timesheet in timesheet_data:
-        date_only = timesheet['start_time__month']
+        # Agrupa pelo campo definido em group_by_field.
+        date_only = timesheet[group_by_field]
         total_hours = timesheet['end_time'] - timesheet['start_time']
         result_dict[date_only]['total_hours'] += total_hours
 
-    # Convert the dictionary to the desired output format
     output = [
         {
-            'month': key,
+            key_field: key,
             'total_hours': value['total_hours'],
             'total_hours_display': str(get_hour_display(value['total_hours'])),
         }
@@ -268,37 +265,20 @@ def group_by_month(project):
     ]
 
     return output
+
+
+def group_by_month(project):
+    '''
+    Agrupa os dados por mês.
+    '''
+    return group_data(project, 'start_time__month', 'month')
 
 
 def group_by_sprint(project):
     '''
     Agrupa os dados por sprint.
     '''
-    timesheet_data = Timesheet.objects.filter(task__project__title=project).values(
-        'start_time',
-        'end_time',
-        'task__issue__sprint__number',
-    ).order_by('start_time')
-
-    # Create a dictionary to store the total hours and issues for each date
-    result_dict = defaultdict(lambda: {'total_hours': timedelta(), 'issues': set()})
-
-    for timesheet in timesheet_data:
-        date_only = timesheet['task__issue__sprint__number']
-        total_hours = timesheet['end_time'] - timesheet['start_time']
-        result_dict[date_only]['total_hours'] += total_hours
-
-    # Convert the dictionary to the desired output format
-    output = [
-        {
-            'sprint': key,
-            'total_hours': value['total_hours'],
-            'total_hours_display': str(get_hour_display(value['total_hours'])),
-        }
-        for key, value in result_dict.items()
-    ]
-
-    return output
+    return group_data(project, 'task__issue__sprint__number', 'sprint')
 
 
 def write_total_hours_on_timesheet_file(timesheet_filename, total_hours):
