@@ -4,7 +4,7 @@ m create_issue \
 --title='Criar issue' \
 --body='Criar issue por linha de comando.' \
 --labels='backend' \
---milestone='1'
+--milestone='1'  # milestone.original_id
 '''
 import warnings
 
