@@ -378,11 +378,9 @@ def write_total_hours_by_sprint_on_timesheet_file(timesheet_filename, total_hour
 
 
 def export_timesheet_service(project):
-    tasks = project.get_tasks()
-
     customer = project.customer.name
-    project = project.title
-    timesheet_filename = f'{FOLDER_BASE}/{customer}/{project}/timesheet_teste_{project}.xlsx'
+    title = project.title
+    timesheet_filename = f'{FOLDER_BASE}/{customer}/{project}/timesheet_teste_{title}.xlsx'
 
     try:
         wb = load_workbook(timesheet_filename)
@@ -411,20 +409,19 @@ def export_timesheet_service(project):
         cell = ws.cell(row=1, column=col, value=label)
         cell.font = bold_calibri
 
-    for task in tasks:
-        for timesheet in task.get_timesheets():
-            ws.cell(row=new_row, column=1, value=timesheet.date_from_start_time_display)
-            ws.cell(row=new_row, column=2, value=timesheet.start_time_display)
-            ws.cell(row=new_row, column=3, value=timesheet.end_time_display)
-            ws.cell(row=new_row, column=4, value=timesheet.get_hour())
-            ws.cell(row=new_row, column=5, value=timesheet.get_hour_display())
+    for timesheet in project.get_tasks():
+        ws.cell(row=new_row, column=1, value=timesheet.date_from_start_time_display)
+        ws.cell(row=new_row, column=2, value=timesheet.start_time_display)
+        ws.cell(row=new_row, column=3, value=timesheet.end_time_display)
+        ws.cell(row=new_row, column=4, value=timesheet.get_hour())
+        ws.cell(row=new_row, column=5, value=timesheet.get_hour_display())
 
-            cell = ws.cell(row=new_row, column=6, value=timesheet.task.issue.number)
-            cell.alignment = styles.Alignment(horizontal='center')
+        cell = ws.cell(row=new_row, column=6, value=timesheet.task.issue.number)
+        cell.alignment = styles.Alignment(horizontal='center')
 
-            ws.cell(row=new_row, column=7, value=timesheet.task.issue.title)
+        ws.cell(row=new_row, column=7, value=timesheet.task.issue.title)
 
-            new_row += 1
+        new_row += 1
 
     wb.save(timesheet_filename)
 

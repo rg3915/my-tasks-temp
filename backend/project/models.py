@@ -43,4 +43,5 @@ class Project(TimeStampedModel, Active):
         return [sprint.get_issues() for sprint in self.get_sprints()]
 
     def get_tasks(self):
-        return self.task_set.all()
+        from backend.task.models import Timesheet
+        return Timesheet.objects.filter(task__project=self).order_by('start_time')
