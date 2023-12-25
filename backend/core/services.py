@@ -374,8 +374,14 @@ def group_by_date(project):
     result_dict = defaultdict(lambda: {'total_hours': timedelta(), 'issues': set()})
 
     for timesheet in timesheet_data:
+        start_time = timesheet.get('start_time')
+        end_time = timesheet.get('end_time')
+
+        total_hours = timedelta()
+        if start_time is not None and end_time is not None:
+            total_hours = end_time - start_time
+
         date_only = timesheet['start_time'].date()
-        total_hours = timesheet['end_time'] - timesheet['start_time']
         issues = timesheet['task__issue__number']
         result_dict[date_only]['total_hours'] += total_hours
         result_dict[date_only]['issues'].add(issues)
@@ -409,7 +415,14 @@ def group_data(project, group_by_field, key_field):
     for timesheet in timesheet_data:
         # Agrupa pelo campo definido em group_by_field.
         date_only = timesheet[group_by_field]
-        total_hours = timesheet['end_time'] - timesheet['start_time']
+
+        start_time = timesheet.get('start_time')
+        end_time = timesheet.get('end_time')
+
+        total_hours = timedelta()
+        if start_time is not None and end_time is not None:
+            total_hours = end_time - start_time
+
         result_dict[date_only]['total_hours'] += total_hours
 
     output = [
@@ -540,6 +553,8 @@ def export_timesheet_service(project):
     title = project.title
     timesheet_filename = f'{FOLDER_BASE}/{customer}/{project}/timesheet_teste_{title}.xlsx'
 
+    print(f'Salvo em {timesheet_filename}')
+
     try:
         wb = load_workbook(timesheet_filename)
         ws = wb['timesheet']
@@ -569,8 +584,8 @@ def export_timesheet_service(project):
 
     for timesheet in project.get_tasks():
         ws.cell(row=new_row, column=1, value=timesheet.date_from_start_time_display)
-        ws.cell(row=new_row, column=2, value=timesheet.start_time_display)
-        ws.cell(row=new_row, column=3, value=timesheet.end_time_display)
+        ws.cell(row=new_row, column=2, value=timesheet.start_time_display_fixed_hour)
+        ws.cell(row=new_row, column=3, value=timesheet.end_time_display_fixed_hour)
         ws.cell(row=new_row, column=4, value=timesheet.get_hour())
         ws.cell(row=new_row, column=5, value=timesheet.get_hour_display())
 

@@ -187,13 +187,13 @@ class Timesheet(TimeStampedModel, UuidModel):
 
     @property
     def start_time_display(self):
-        if self.start_time:
+        if self.start_time - timedelta(hours=3):
             return datetime_to_string(self.start_time, '%H:%M:%S')
 
     @property
     def date_from_start_time_display(self):
         if self.start_time:
-            return datetime_to_string(self.start_time, '%d/%m/%y')
+            return datetime_to_string(self.start_time - timedelta(hours=3), '%d/%m/%y')
 
     @property
     def start_time_display_fixed_hour(self):
@@ -204,6 +204,11 @@ class Timesheet(TimeStampedModel, UuidModel):
     def end_time_display(self):
         if self.end_time:
             return datetime_to_string(self.end_time, '%H:%M:%S')
+
+    @property
+    def end_time_display_fixed_hour(self):
+        if self.end_time:
+            return datetime_to_string(self.end_time - timedelta(hours=3), '%H:%M')
 
     def get_hour(self):
         if self.end_time and self.start_time:
