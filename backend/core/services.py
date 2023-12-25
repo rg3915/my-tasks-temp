@@ -2,14 +2,20 @@ import json
 import os
 from collections import defaultdict
 from datetime import date, datetime, timedelta
+from pprint import pprint
 
 import gitlab
+import requests
 from decouple import config
 from openpyxl import Workbook, load_workbook, styles
 from rich import print
+from rich.console import Console
 
 from backend.core.utils import datetime_to_string
 from backend.task.models import Issue, Label, Sprint, Task, Timesheet
+
+console = Console()
+
 
 FOLDER_BASE = '/home/regis/Dropbox/projetos'
 
@@ -181,6 +187,48 @@ def create_gitlab_issue(args):
     data['milestone'] = milestone
 
     return data
+
+
+def create_github_issue(args):
+    title, body, labels, project, milestone = args.values()
+
+    assignee = 'rg3915'
+
+    repo_owner = project.repository_owner
+    repo_name = project.title
+    token = project.github_token
+    URL = f'https://api.github.com/repos/{repo_owner}/{repo_name}/issues'
+
+    headers = {"Authorization": f"token {token}"}
+
+    labels = labels.split(',')
+
+    # Create our issue
+    issue = {
+        "title": title,
+        "body": body,
+        "assignees": [assignee],
+        "labels": labels,
+        "milestone": milestone.original_id,
+    }
+
+    # Add the issue to our repository
+    response = requests.post(URL, headers=headers, json=issue)
+
+    if response.status_code == 201:
+        console.print(f'Successfully created Issue "{title}"', style='green')
+        data = response.json()
+
+        data['project'] = project
+        data['labels'] = labels
+        data['iid'] = data['number']
+        data['description'] = data['body']
+        data['milestone'] = milestone
+        data['web_url'] = data['html_url']
+
+        return data
+
+    console.print(f'Could not create Issue "{title}"', style='red')
 
 
 def get_hour_display(_time):

@@ -12,6 +12,7 @@ IssueSchema = create_schema(
     Issue,
     depth=1,
     custom_fields=[
+        ('title_display', str, None),
         ('created_display', str, None),
         ('status_display', str, None),
         ('get_labels', str, None),

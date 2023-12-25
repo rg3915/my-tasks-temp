@@ -9,6 +9,10 @@ REPOSITORY_NAMES = (
     ('gl', 'Gitlab'),
 )
 
+REPOSITORY_OWNERS = (
+    ('rg3915', 'rg3915'),
+)
+
 
 class Project(TimeStampedModel, Active):
     title = models.CharField(max_length=255, unique=True, help_text='Digite o título do projeto')
@@ -19,8 +23,10 @@ class Project(TimeStampedModel, Active):
         related_name='projects',
     )
     repository_name = models.CharField(max_length=2, choices=REPOSITORY_NAMES, null=True, blank=True)
+    repository_owner = models.CharField(max_length=11, choices=REPOSITORY_OWNERS, null=True, blank=True)
     repository_url = models.URLField(max_length=200, null=True, blank=True, help_text='Digite a url do repositório')
     gitlab_project_id = models.CharField(max_length=8, null=True, blank=True, help_text='Id do repositório no Gitlab')
+    github_token = models.TextField(null=True, blank=True)
 
     class Meta:
         ordering = ('title',)

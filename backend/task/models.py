@@ -103,6 +103,12 @@ class Issue(TimeStampedModel, UuidModel):
         return f'{self.number} - {self.title}'
 
     @property
+    def title_display(self):
+        if len(self.title) <= 60:
+            return self.title
+        return f'{self.title[:60]}...'
+
+    @property
     def status_display(self):
         return self.get_status_display()
 
@@ -138,6 +144,12 @@ class Task(TimeStampedModel, UuidModel):
 
     def __str__(self):
         return f'{self.title}'
+
+    @property
+    def title_display(self):
+        if len(self.title) <= 70:
+            return self.title
+        return f'{self.title[:70]}...'
 
     @property
     def customer_display(self):
@@ -185,7 +197,8 @@ class Timesheet(TimeStampedModel, UuidModel):
 
     @property
     def start_time_display_fixed_hour(self):
-        return datetime_to_string(self.start_time - timedelta(hours=3), '%H:%M')
+        if self.start_time:
+            return datetime_to_string(self.start_time - timedelta(hours=3), '%H:%M')
 
     @property
     def end_time_display(self):
@@ -218,7 +231,7 @@ class Timesheet(TimeStampedModel, UuidModel):
 
     def to_dict(self):
         return {
-            'start_time': datetime_to_string(self.start_time - timedelta(hours=3), '%H:%M'),
-            'end_time': datetime_to_string(self.end_time - timedelta(hours=3), '%H:%M'),
+            'start_time': datetime_to_string(self.start_time - timedelta(hours=3), '%H:%M') if self.start_time else None,  # noqa E501
+            'end_time': datetime_to_string(self.end_time - timedelta(hours=3), '%H:%M') if self.end_time else None,  # noqa E501
             'get_hour': str(self.get_hour()).split('.')[0]
         }

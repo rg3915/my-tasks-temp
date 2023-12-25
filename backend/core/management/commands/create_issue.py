@@ -1,7 +1,16 @@
 '''
+# Gitlab
 m create_issue \
 --project='my-tasks' \
 --title='Criar issue' \
+--body='Criar issue por linha de comando.' \
+--labels='backend' \
+--milestone='4287330'  # milestone.original_id
+
+# Github
+m create_issue \
+--project='my-tasks-temp' \
+--title='Criar issue 3' \
 --body='Criar issue por linha de comando.' \
 --labels='backend' \
 --milestone='1'  # milestone.original_id
@@ -10,7 +19,12 @@ import warnings
 
 from django.core.management.base import BaseCommand
 
-from backend.core.services import create_gitlab_issue, save_issue, save_task
+from backend.core.services import (
+    create_github_issue,
+    create_gitlab_issue,
+    save_issue,
+    save_task
+)
 from backend.project.models import Project
 from backend.task.models import Milestone
 
@@ -27,10 +41,16 @@ def create_issue(options):
     args['project'] = project
 
     repository_name = project.get_repository_name_display()
+
+    # Gitlab
     milestone_obj = Milestone.objects.filter(original_id=options['milestone'], project=project).first()
 
+    # Gitlab
     # Pega o milestone correto do projeto.
     args['milestone'] = milestone_obj
+
+    if repository_name == 'Github':
+        data = create_github_issue(args)
 
     if repository_name == 'Gitlab':
         data = create_gitlab_issue(args)

@@ -14,6 +14,7 @@ TaskSchema = create_schema(
     Task,
     depth=1,
     custom_fields=[
+        ('title_display', str, None),
         ('customer_display', str, None),
         ('status_display', str, None),
         ('last_timesheet_dict', dict, None),
