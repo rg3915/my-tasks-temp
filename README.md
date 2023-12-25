@@ -37,3 +37,33 @@ git config user.name rg3915
 git config user.email *************100@*****.com
 ```
 
+## Comandos
+
+### Criar Issue
+
+```bash
+python manage.py create_issue \
+--project='my-tasks' \
+--title='Criar issue' \
+--body='Criar issue por linha de comando.' \
+--labels='backend' \
+--milestone='1111111'
+```
+
+### Editar Issue
+
+```bash
+python manage.py update_issue \
+--issue=1 \
+--project='my-tasks' \
+--title='Editado' \
+--body='The quick brown fox jumps over the lazy dog.' \
+--labels='backend,frontend,bug' \
+--milestone='1111111'  # milestone.original_id
+```
+
+### Exportar timesheet
+
+```bash
+python manage.py export_timesheet --project='my-tasks'
+```
