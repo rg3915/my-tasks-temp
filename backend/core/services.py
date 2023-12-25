@@ -111,6 +111,40 @@ def save_issue(data):
     return issue
 
 
+def update_issue(data):
+    labels = Label.objects.filter(label__in=data['labels'])
+    sprint = Sprint.objects.filter(project=data['project']).last()
+
+    issue = Issue.objects.filter(number=data['iid'], sprint__project=data['project']).first()
+
+    payload = dict(
+        number=data['iid'],
+        title=data['title'],
+        description=data['description'],
+        milestone=data['milestone'],
+    )
+
+    for attr, value in payload.items():
+        setattr(issue, attr, value)
+
+    issue.save()
+
+    print(issue)
+
+    issue.labels.clear()
+    for label in labels:
+        issue.labels.add(label)
+
+    filename = f'{FOLDER_BASE}/{sprint.project.customer.name}/{sprint.project.title}/tarefas.txt'
+
+    is_bug = False
+    if 'bug' in data['labels']:
+        is_bug = True
+
+    write_on_tarefas(filename, issue, data['labels'], is_bug)
+    return issue
+
+
 def save_task(issue):
     data = dict(
         title=issue.title,
@@ -118,6 +152,12 @@ def save_task(issue):
         issue=issue,
     )
     Task.objects.create(**data)
+
+
+def update_task(issue):
+    task = Task.objects.filter(issue=issue).first()
+    task.title = issue.title
+    task.save()
 
 
 def create_timesheet(task, previous_hour):
@@ -229,6 +269,52 @@ def create_github_issue(args):
         return data
 
     console.print(f'Could not create Issue "{title}"', style='red')
+
+
+def update_gitlab_issue(args):
+    ...
+
+
+def update_github_issue(args):
+    issue, title, body, labels, project, milestone = args.values()
+
+    assignee = 'rg3915'
+
+    repo_owner = project.repository_owner
+    repo_name = project.title
+    token = project.github_token
+    URL = f'https://api.github.com/repos/{repo_owner}/{repo_name}/issues/{issue}'
+
+    headers = {"Authorization": f"token {token}"}
+
+    labels = labels.split(',')
+
+    # Create our issue
+    issue = {
+        "title": title,
+        "body": body,
+        "assignees": [assignee],
+        "labels": labels,
+        "milestone": milestone.original_id,
+    }
+
+    # Add the issue to our repository
+    response = requests.post(URL, headers=headers, json=issue)
+
+    if response.status_code == 200:
+        console.print(f'Successfully updated Issue "{title}"', style='green')
+        data = response.json()
+
+        data['project'] = project
+        data['labels'] = labels
+        data['iid'] = data['number']
+        data['description'] = data['body']
+        data['milestone'] = milestone
+        data['web_url'] = data['html_url']
+
+        return data
+
+    console.print(f'Could not update Issue "{title}"', style='red')
 
 
 def get_hour_display(_time):

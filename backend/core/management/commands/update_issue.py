@@ -1,19 +1,12 @@
 '''
-https://docs.github.com/en/rest/issues?apiVersion=2022-11-28#create-an-issue
-
-# Gitlab
-m create_issue \
---project='my-tasks' \
---title='Criar issue' \
---body='Criar issue por linha de comando.' \
---labels='backend' \
---milestone='4287330'  # milestone.original_id
+https://docs.github.com/en/rest/issues/issues?apiVersion=2022-11-28#update-an-issue
 
 # Github
-m create_issue \
+m update_issue \
+--issue=1 \
 --project='my-tasks-temp' \
---title='Criar issue 3' \
---body='Criar issue por linha de comando.' \
+--title='Criar issue editado' \
+--body='The quick brown fox jumps over the lazy dog.' \
 --labels='backend' \
 --milestone='1'  # milestone.original_id
 '''
@@ -22,10 +15,10 @@ import warnings
 from django.core.management.base import BaseCommand
 
 from backend.core.services import (
-    create_github_issue,
-    create_gitlab_issue,
-    save_issue,
-    save_task
+    update_github_issue,
+    update_gitlab_issue,
+    update_issue,
+    update_task
 )
 from backend.project.models import Project
 from backend.task.models import Milestone
@@ -33,8 +26,9 @@ from backend.task.models import Milestone
 warnings.filterwarnings('ignore')
 
 
-def create_issue(options):
+def update_issue_command(options):
     args = dict(
+        issue=options['issue'],
         title=options['title'],
         body=options['body'],
         labels=options['labels'],
@@ -52,8 +46,8 @@ def create_issue(options):
     args['milestone'] = milestone_obj
 
     issue_creation_functions = {
-        'Github': create_github_issue,
-        'Gitlab': create_gitlab_issue
+        'Github': update_github_issue,
+        'Gitlab': update_gitlab_issue
     }
 
     if repository_name in issue_creation_functions:
@@ -61,14 +55,17 @@ def create_issue(options):
     else:
         data = None
 
-    issue = save_issue(data)
-    save_task(issue)
+    data['project'] = project
+
+    issue = update_issue(data)
+    update_task(issue)
 
 
 class Command(BaseCommand):
-    help = 'Create issue.'
+    help = 'Update issue.'
 
     def add_arguments(self, parser):
+        parser.add_argument('--issue', '-i', type=str, help='Type the number of issue.')
         parser.add_argument('--project', '-p', type=str, help='Type the name of project.')
         parser.add_argument('--title', '-t', type=str, help='Type the title.')
         parser.add_argument('--body', '-b', type=str, help='Type the description.')
@@ -76,4 +73,4 @@ class Command(BaseCommand):
         parser.add_argument('--milestone', '-m', type=str, help='Type the milestone.')
 
     def handle(self, *args, **options):
-        create_issue(options)
+        update_issue_command(options)
