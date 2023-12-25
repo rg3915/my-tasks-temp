@@ -1,4 +1,7 @@
 '''
+https://python-gitlab.readthedocs.io/en/stable/
+https://docs.gitlab.com/ee/api/issues.html
+
 https://docs.github.com/en/rest/issues?apiVersion=2022-11-28#create-an-issue
 
 # Gitlab

@@ -1,5 +1,17 @@
 '''
+https://python-gitlab.readthedocs.io/en/stable/
+https://docs.gitlab.com/ee/api/issues.html
+
 https://docs.github.com/en/rest/issues/issues?apiVersion=2022-11-28#update-an-issue
+
+# Gitlab
+m update_issue \
+--issue=54 \
+--project='my-tasks' \
+--title='Editado' \
+--body='The quick brown fox jumps over the lazy dog.' \
+--labels='frontend,bug' \
+--milestone='4287330'  # milestone.original_id
 
 # Github
 m update_issue \

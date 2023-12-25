@@ -272,7 +272,31 @@ def create_github_issue(args):
 
 
 def update_gitlab_issue(args):
-    ...
+    '''
+    Requer /etc/rg3915.cfg
+    '''
+    gl = gitlab.Gitlab.from_config('somewhere', ['/etc/rg3915.cfg'])
+
+    id, title, body, labels, project, milestone = args.values()
+
+    gl_project = gl.projects.get(project.gitlab_project_id)
+
+    data_dict = {
+        "title": f"{title}",
+        "description": f"{body}",
+        "assignee_id": config('GITLAB_ASSIGNEE_ID'),
+        "labels": labels,
+        "milestone_id": milestone.original_id,
+    }
+
+    response = gl_project.issues.update(id, data_dict)
+
+    data = response
+
+    data['project'] = project
+    data['milestone'] = milestone
+
+    return data
 
 
 def update_github_issue(args):
