@@ -49,11 +49,15 @@ def create_issue(options):
     # Pega o milestone correto do projeto.
     args['milestone'] = milestone_obj
 
-    if repository_name == 'Github':
-        data = create_github_issue(args)
+    issue_creation_functions = {
+        'Github': create_github_issue,
+        'Gitlab': create_gitlab_issue
+    }
 
-    if repository_name == 'Gitlab':
-        data = create_gitlab_issue(args)
+    if repository_name in issue_creation_functions:
+        data = issue_creation_functions[repository_name](args)
+    else:
+        data = None
 
     issue = save_issue(data)
     save_task(issue)
