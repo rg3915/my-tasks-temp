@@ -8,7 +8,8 @@ class Payment(UuidModel, TimeStampedModel):
     number = models.PositiveIntegerField()
     estimated_time = models.PositiveIntegerField(null=True, blank=True)
     estimated_value = models.DecimalField(max_digits=7, decimal_places=2, null=True, blank=True)
-    value = models.DecimalField(max_digits=7, decimal_places=2, null=True, blank=True)
+    value_per_hour = models.DecimalField(max_digits=7, decimal_places=2)
+    value_total = models.DecimalField(max_digits=7, decimal_places=2, null=True, blank=True)
     hours = models.DurationField(null=True, blank=True)
     payment_date = models.DateField(null=True, blank=True)
     sprint = models.ForeignKey(
