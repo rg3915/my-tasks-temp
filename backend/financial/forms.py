@@ -4,6 +4,15 @@ from .models import Payment
 
 
 class PaymentForm(forms.ModelForm):
+    payment_date = forms.DateField(
+        required=False,
+        widget=forms.DateInput(
+            format='%Y-%m-%d',
+            attrs={
+                'type': 'date',
+            }),
+        input_formats=('%Y-%m-%d',),
+    )
 
     class Meta:
         model = Payment

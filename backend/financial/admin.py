@@ -9,7 +9,8 @@ class PaymentAdmin(admin.ModelAdmin):
         '__str__',
         'estimated_time',
         'estimated_value',
-        'value',
-        'hours',
+        'value_per_hour',
+        'value_total',
+        'spent_time_total',
         'payment_date',
     )

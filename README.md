@@ -6,6 +6,7 @@ Sistema de gerenciamento de tarefas e timesheet.
 
 * [Django 4.2.3](https://www.djangoproject.com/)
 * [Windmill](https://github.com/estevanmaito/windmill-dashboard)
+    * [heroicons](https://heroicons.dev/)
 
 ## Como rodar o projeto?
 

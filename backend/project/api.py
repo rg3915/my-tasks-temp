@@ -1,5 +1,4 @@
 from http import HTTPStatus
-from typing import List
 
 from ninja import ModelSchema, Router
 from ninja.orm import create_schema
@@ -32,7 +31,7 @@ class ProjectSchemaIn(ModelSchema):
         )
 
 
-@router.get('project/', response=List[ProjectSchema])
+@router.get('project/', response=list[ProjectSchema])
 def list_project(request):
     return Project.objects.all()
 
