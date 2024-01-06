@@ -23,6 +23,7 @@ INSTALLED_APPS = [
     'django_extensions',
     'widget_tweaks',
     'dr_scaffold',
+    'import_export',
     # my apps
     'backend.core',
     'backend.crm',

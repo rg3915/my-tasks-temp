@@ -1,10 +1,17 @@
 from django.contrib import admin
+from import_export import resources
 
 from .models import Payment
 
 
+class PaymentResource(resources.ModelResource):
+    class Meta:
+        model = Payment
+
+
 @admin.register(Payment)
 class PaymentAdmin(admin.ModelAdmin):
+    resource_classes = (PaymentResource,)
     list_display = (
         '__str__',
         'estimated_time',

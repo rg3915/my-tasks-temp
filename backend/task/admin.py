@@ -1,4 +1,6 @@
 from django.contrib import admin
+from import_export import resources
+from import_export.admin import ExportActionModelAdmin, ImportExportModelAdmin
 
 from .forms import LabelForm
 from .models import Issue, Label, Milestone, Sprint, Tag, Task, Timesheet
@@ -17,8 +19,14 @@ class LabelAdmin(admin.ModelAdmin):
     form = LabelForm
 
 
+class MilestoneResource(resources.ModelResource):
+    class Meta:
+        model = Milestone
+
+
 @admin.register(Milestone)
 class MilestoneAdmin(admin.ModelAdmin):
+    resource_classes = (MilestoneResource,)
     list_display = ('__str__', 'original_id', 'project')
     search_fields = ('title',)
 
@@ -28,15 +36,27 @@ class IssueInline(admin.TabularInline):
     extra = 0
 
 
+class SprintResource(resources.ModelResource):
+    class Meta:
+        model = Sprint
+
+
 @admin.register(Sprint)
 class SprintAdmin(admin.ModelAdmin):
+    resource_classes = (SprintResource,)
     inlines = (IssueInline,)
     list_display = ('__str__', 'project')
     list_filter = ('project',)
 
 
+class IssueResource(resources.ModelResource):
+    class Meta:
+        model = Issue
+
+
 @admin.register(Issue)
 class IssueAdmin(admin.ModelAdmin):
+    resource_classes = (IssueResource,)
     list_display = ('__str__', 'get_labels', 'milestone', 'sprint', 'status')
     readonly_fields = ('slug', 'created', 'modified')
     search_fields = ('title',)
@@ -53,8 +73,14 @@ class TimesheetInline(admin.TabularInline):
     extra = 0
 
 
+class TaskResource(resources.ModelResource):
+    class Meta:
+        model = Task
+
+
 @admin.register(Task)
 class TaskAdmin(admin.ModelAdmin):
+    resource_classes = (TaskResource,)
     inlines = (TimesheetInline,)
     list_display = ('__str__', 'project', 'issue', 'status')
     readonly_fields = ('slug', 'created', 'modified')
@@ -63,8 +89,14 @@ class TaskAdmin(admin.ModelAdmin):
     date_hierarchy = 'created'
 
 
+class TimesheetResource(resources.ModelResource):
+    class Meta:
+        model = Timesheet
+
+
 @admin.register(Timesheet)
-class TimesheetAdmin(admin.ModelAdmin):
+class TimesheetAdmin(ImportExportModelAdmin, ExportActionModelAdmin):
+    resource_classes = (TimesheetResource,)
     list_display = ('__str__', 'start_time', 'end_time', 'get_hour')
     readonly_fields = ('slug', 'created', 'modified')
     search_fields = ('task__title',)

@@ -68,3 +68,19 @@ python manage.py update_issue \
 ```bash
 python manage.py export_timesheet --project='my-tasks'
 ```
+
+### Exportar com django-import-export
+
+Vamos fazer isso por linha de comando, via `shell_plus`.
+
+```python
+from backend.task.admin import TimesheetResource
+
+dataset = TimesheetResource().export()
+```
+
+Ou
+
+```bash
+python manage.py export_data
+```
