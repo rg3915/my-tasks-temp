@@ -11,7 +11,18 @@ REPOSITORY_NAMES = (
 
 REPOSITORY_OWNERS = (
     ('rg3915', 'rg3915'),
+    ('colanabola', 'colanabola'),
 )
+
+
+class Owner(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+
+    class Meta:
+        ordering = ('name',)
+
+    def __str__(self):
+        return f'{self.name}'
 
 
 class Project(TimeStampedModel, Active):
@@ -23,7 +34,7 @@ class Project(TimeStampedModel, Active):
         related_name='projects',
     )
     repository_name = models.CharField(max_length=2, choices=REPOSITORY_NAMES, null=True, blank=True)
-    repository_owner = models.CharField(max_length=11, choices=REPOSITORY_OWNERS, null=True, blank=True)
+    repository_owner = models.ForeignKey(Owner, on_delete=models.CASCADE)
     repository_url = models.URLField(max_length=200, null=True, blank=True, help_text='Digite a url do repositório')
     gitlab_project_id = models.CharField(max_length=8, null=True, blank=True, help_text='Id do repositório no Gitlab')
     github_token = models.TextField(null=True, blank=True)
