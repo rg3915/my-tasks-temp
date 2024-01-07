@@ -111,6 +111,46 @@ def save_issue(data):
     return issue
 
 
+def save_issue_multiple(datas):
+    issues = []
+
+    sorted_data = sorted(datas, key=lambda x: x['iid'])
+
+    for data in sorted_data:
+        labels = Label.objects.filter(label__in=data['labels'])
+        sprint = Sprint.objects.filter(project=data['project']).last()
+
+        issue, _ = Issue.objects.get_or_create(
+            number=data['iid'],
+            title=data['title'],
+            description=data['description'],
+            milestone=data['milestone'],
+            sprint=sprint,
+            url=data['web_url'],
+        )
+
+        issues.append(issue)
+
+        for label in labels:
+            issue.labels.add(label)
+
+        filename = f'{FOLDER_BASE}/{sprint.project.customer.name}/{sprint.project.title}/tarefas.txt'
+
+        number = data['iid']
+        title = data['title']
+
+        print(filename)
+        print(number)
+        print(title)
+
+        is_bug = False
+        if 'bug' in data['labels']:
+            is_bug = True
+
+        write_on_tarefas(filename, issue, data['labels'], is_bug)
+    return issues
+
+
 def update_issue(data):
     labels = Label.objects.filter(label__in=data['labels'])
     sprint = Sprint.objects.filter(project=data['project']).last()
@@ -146,12 +186,16 @@ def update_issue(data):
 
 
 def save_task(issue):
-    data = dict(
+    Task.objects.get_or_create(
         title=issue.title,
         project=issue.sprint.project,
         issue=issue,
     )
-    Task.objects.create(**data)
+
+
+def save_task_multiple(issues):
+    for issue in issues:
+        save_task(issue)
 
 
 def update_task(issue):
@@ -339,6 +383,39 @@ def update_github_issue(args):
         return data
 
     console.print(f'Could not update Issue "{title}"', style='red')
+
+
+def read_github_issue(args):
+    ...
+
+
+def read_gitlab_issue(args):
+    '''
+    Requer /etc/rg3915.cfg
+    '''
+    gl = gitlab.Gitlab.from_config('somewhere', ['/etc/rg3915.cfg'])
+
+    milestone, assignee, project = args.values()
+
+    gl_project = gl.projects.get(project.gitlab_project_id)
+
+    response = gl_project.issues.list(per_page=100, order_by='created_at')
+    # response = gl_project.issues.list(per_page=100, milestone='0.0.1', state='opened')
+    # response = gl_project.issues.list(per_page=100, order_by='created_at')
+
+    items = []
+    for data in response:
+        _data = {}
+        _data['iid'] = data.iid
+        _data['title'] = data.title
+        _data['description'] = data.description
+        _data['labels'] = data.labels
+        _data['web_url'] = data.web_url
+        _data['project'] = project
+        _data['milestone'] = milestone
+        items.append(_data)
+
+    return items
 
 
 def get_hour_display(_time):

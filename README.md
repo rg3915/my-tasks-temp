@@ -31,6 +31,14 @@ python manage.py migrate
 python manage.py createsuperuser
 ```
 
+### DOCS das APIs
+
+[python-gitlab](https://python-gitlab.readthedocs.io/en/stable/)
+
+[Issues API](https://docs.gitlab.com/ee/api/issues.html)
+
+[GitHub REST API](https://docs.github.com/en/rest/issues?apiVersion=2022-11-28#create-an-issue)
+
 ### Sobre o git config
 
 ```
@@ -61,6 +69,15 @@ python manage.py update_issue \
 --body='The quick brown fox jumps over the lazy dog.' \
 --labels='backend,frontend,bug' \
 --milestone='1111111'  # milestone.original_id
+```
+
+### Ler Issues
+
+```bash
+python manage.py read_issue \
+--project='my-tasks' \
+--milestone='111111' \
+--assignee='rg3915'
 ```
 
 ### Exportar timesheet
