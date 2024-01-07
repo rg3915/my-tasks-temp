@@ -357,7 +357,6 @@ def update_github_issue(args):
 
     labels = labels.split(',')
 
-    # Create our issue
     issue = {
         "title": title,
         "body": body,
@@ -383,10 +382,6 @@ def update_github_issue(args):
         return data
 
     console.print(f'Could not update Issue "{title}"', style='red')
-
-
-def read_github_issue(args):
-    ...
 
 
 def read_gitlab_issue(args):
@@ -416,6 +411,39 @@ def read_gitlab_issue(args):
         items.append(_data)
 
     return items
+
+
+def read_github_issue(args):
+    milestone, assignee, project = args.values()
+
+    repo_owner = project.repository_owner
+    repo_name = project.title
+    token = project.github_token
+    URL = f'https://api.github.com/repos/{repo_owner}/{repo_name}/issues'
+
+    headers = {"Authorization": f"token {token}"}
+
+    # Read issues
+    response = requests.get(URL, headers=headers)
+
+    issues = []
+    if response.status_code == 200:
+        console.print('Successfully read Issues', style='green')
+
+        for data in response.json():
+            labels = [item['name'] for item in data['labels']]
+            data['project'] = project
+            data['labels'] = labels
+            data['iid'] = data['number']
+            data['description'] = data['body']
+            data['milestone'] = milestone
+            data['web_url'] = data['html_url']
+
+            issues.append(data)
+
+        return issues
+
+    console.print(f'Could not read Issues', style='red')
 
 
 def get_hour_display(_time):
