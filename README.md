@@ -80,6 +80,18 @@ python manage.py read_issue \
 --assignee='rg3915'
 ```
 
+### Iniciar task
+
+```bash
+python manage.py start_task --project='my-tasks' --task=1 -ph=True
+```
+
+### Parar task
+
+```bash
+python manage.py stop_task --project='my-tasks' --task=1
+```
+
 ### Exportar timesheet
 
 ```bash

@@ -3,7 +3,7 @@ from datetime import timedelta
 from django.db import models
 
 from backend.core.models import TimeStampedModel, UuidModel
-from backend.core.utils import datetime_to_string
+from backend.core.utils import datetime_to_string, timedelta_to_string
 from backend.project.models import Project
 
 
@@ -212,7 +212,7 @@ class Timesheet(TimeStampedModel, UuidModel):
 
     def get_hour(self):
         if self.end_time and self.start_time:
-            return self.end_time - self.start_time
+            return timedelta_to_string(self.end_time - self.start_time)
         return 0
 
     def get_hour_display(self):

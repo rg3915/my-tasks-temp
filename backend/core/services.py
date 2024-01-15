@@ -58,7 +58,21 @@ def write_on_tarefas(filename, issue, labels, is_bug):
         if is_bug:
             title = f'bugfix: {title}'
 
-        f.write(f"    _gadd '{title}. close #{issue.number}'; # gp\n")
+        project = issue.sprint.project.title
+        customer = issue.sprint.project.customer.name
+        milestone = issue.milestone.title
+
+        f.write(f'    echo "* {title}. #{issue.number}" >> ~/{customer}/{project}/CHANGELOG.md\n')
+        f.write(f'    echo "* {title}. #{issue.number}" >> ~/Dropbox/projetos/{customer}/{project}/changelog/CHANGELOG_{milestone}.md\n\n')  # noqa E501
+
+        f.write(f"    cd ~/gitlab/my-tasks; sa; m start_task -p='{project}' -t={issue.number} -ph=True\n")
+
+        f.write(f"    workon {customer}; python cli/task.py -c start -p {project} -t {issue.number} --previous_hour\n\n")
+
+        f.write(f"    _gadd '{title}. close #{issue.number}'; # gp\n\n")
+
+        f.write(f"    cd ~/gitlab/my-tasks; sa; m stop_task -p='{project}' -t={issue.number}\n")
+        f.write(f"    workon {customer}; python cli/task.py -c end -p {project} -t {issue.number}\n")
 
 
 def write_changelog_dropbox(issue):

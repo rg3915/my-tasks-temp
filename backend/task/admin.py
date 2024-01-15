@@ -85,7 +85,7 @@ class TaskAdmin(admin.ModelAdmin):
     list_display = ('__str__', 'project', 'issue', 'status')
     readonly_fields = ('slug', 'created', 'modified')
     search_fields = ('title',)
-    list_filter = ('status', 'tags')
+    list_filter = ('status', 'tags', 'project')
     date_hierarchy = 'created'
 
 
