@@ -27,6 +27,14 @@ def stop_task_command(options) -> bool:
         issue__number=options['task']
     ).first()
 
+    # Fecha a Task
+    task.status = 'cl'
+    task.save()
+
+    # Fecha a Issue
+    task.issue.status = 'cl'
+    task.issue.save()
+
     print(f'Stop issue: {task.issue.number} - {task}')
     stop_timesheet(task)
     return True
