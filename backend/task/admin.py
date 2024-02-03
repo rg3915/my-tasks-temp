@@ -61,6 +61,7 @@ class IssueAdmin(admin.ModelAdmin):
     readonly_fields = ('slug', 'created', 'modified')
     search_fields = ('title',)
     list_filter = ('status', 'labels', 'milestone')
+    list_editable = ('status',)
     date_hierarchy = 'created'
 
     @admin.display(description='labels')
@@ -82,10 +83,11 @@ class TaskResource(resources.ModelResource):
 class TaskAdmin(admin.ModelAdmin):
     resource_classes = (TaskResource,)
     inlines = (TimesheetInline,)
-    list_display = ('__str__', 'project', 'issue', 'status')
+    list_display = ('__str__', 'project', 'status', 'issue')
     readonly_fields = ('slug', 'created', 'modified')
     search_fields = ('title',)
     list_filter = ('status', 'tags', 'project')
+    list_editable = ('status',)
     date_hierarchy = 'created'
 
 
