@@ -62,12 +62,7 @@ def write_on_tarefas(filename, issue, labels, is_bug):
         customer = issue.sprint.project.customer.name
         milestone = issue.milestone.title
 
-        if customer == 'ekoos':
-            pre_customer = 'ek'
-        else:
-            pre_customer = customer
-
-        f.write(f'    echo "* {title}. #{issue.number}" >> ~/{pre_customer}/{project}/CHANGELOG.md\n')
+        f.write(f'    echo "* {title}. #{issue.number}" >> ~/{customer}/{project}/CHANGELOG.md\n')
         f.write(f'    echo "* {title}. #{issue.number}" >> ~/Dropbox/projetos/{customer}/{project}/changelog/CHANGELOG_{milestone}.md\n\n')  # noqa E501
 
         f.write(f"    cd ~/gitlab/my-tasks; sa; m start_task -p='{project}' -t={issue.number} -ph=True\n")
