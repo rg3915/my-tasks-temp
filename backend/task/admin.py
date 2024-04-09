@@ -59,7 +59,7 @@ class IssueAdmin(admin.ModelAdmin):
     resource_classes = (IssueResource,)
     list_display = ('__str__', 'get_labels', 'milestone', 'sprint', 'status')
     readonly_fields = ('slug', 'created', 'modified')
-    search_fields = ('title',)
+    search_fields = ('number', 'title')
     list_filter = ('status', 'labels', 'milestone')
     list_editable = ('status',)
     date_hierarchy = 'created'
