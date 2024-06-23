@@ -46,6 +46,10 @@ git config user.name rg3915
 git config user.email *************100@*****.com
 ```
 
+### Gitlab
+
+O Token do Gitlab é configurado em `/etc/rg3915.cfg`
+
 ## Comandos
 
 ### Criar Issue
