@@ -99,8 +99,12 @@ class TimesheetResource(resources.ModelResource):
 @admin.register(Timesheet)
 class TimesheetAdmin(ImportExportModelAdmin, ExportActionModelAdmin):
     resource_classes = (TimesheetResource,)
-    list_display = ('__str__', 'start_time', 'end_time', 'get_hour')
+    list_display = ('__str__', 'get_project', 'start_time', 'end_time', 'get_hour')
     readonly_fields = ('slug', 'created', 'modified')
     search_fields = ('task__title',)
     list_filter = ('task__project',)
     date_hierarchy = 'created'
+
+    @admin.display(description='project')
+    def get_project(self, obj):
+        return obj.task.project
