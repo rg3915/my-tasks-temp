@@ -2,12 +2,12 @@
 m stop_task --project='my-tasks' --task=1
 '''
 import warnings
-
+import subprocess
 from django.core.management.base import BaseCommand
 from rich import print
 from rich.console import Console
 
-from backend.core.services import remove_aqui_from_tarefas, stop_timesheet
+from backend.core.services import remove_aqui_from_tarefas, stop_timesheet, write_x_on_tarefas
 from backend.project.models import Project
 from backend.task.models import Task
 
@@ -36,8 +36,14 @@ def stop_task_command(options) -> bool:
     task.issue.save()
 
     print(f'Stop issue: {task.issue.number} - {task}')
+
     stop_timesheet(task)
+
     remove_aqui_from_tarefas(task)
+
+    write_x_on_tarefas(task)
+
+    # subprocess.run(f'notify-send --hint int:transient:1 "{task}" "{hora_total}"', shell=True)
     return True
 
 

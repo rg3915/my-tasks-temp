@@ -3,7 +3,6 @@ import os
 import subprocess
 from collections import defaultdict
 from datetime import date, datetime, timedelta
-from pprint import pprint
 
 import gitlab
 import requests
@@ -68,6 +67,17 @@ def remove_aqui_from_tarefas(task):
 
     sed_command = f'sed -i "s/    AQUI//" {tarefas_filename}'
     subprocess.run(sed_command, shell=True)
+
+
+def write_x_on_tarefas(task):
+    sprint = Sprint.objects.filter(project=task.project).last()
+    tarefas_filename = f'{FOLDER_BASE}/{sprint.project.customer.name}/{sprint.project.title}/tarefas.txt'
+
+    task_text = f'{task.issue.number} - {task}'
+    print(task_text)
+    escaped_task_text = task_text.replace("/", "\\/")  # Escape any slashes in the task_text
+    command = f"sed -i 's/\\[ \\] {escaped_task_text}/\\[x\\] {escaped_task_text}/' {tarefas_filename}"
+    subprocess.run(command, shell=True, check=True)
 
 
 def write_on_tarefas(filename, issue, labels, is_bug):
@@ -277,6 +287,8 @@ def stop_timesheet(task):
     timesheet = Timesheet.objects.filter(task=task, end_time__isnull=True).first()
     timesheet.end_time = now
     timesheet.save()
+
+    return timesheet
 
 
 def create_gitlab_issue(args):
