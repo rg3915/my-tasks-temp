@@ -65,7 +65,8 @@ def remove_aqui_from_tarefas(task):
     sprint = Sprint.objects.filter(project=task.project).last()
     tarefas_filename = f'{FOLDER_BASE}/{sprint.project.customer.name}/{sprint.project.title}/tarefas.txt'
 
-    sed_command = f'sed -i "s/    AQUI//" {tarefas_filename}'
+    # sed_command = f'sed -i "s/    AQUI/{{N;d;}}" {tarefas_filename}'
+    sed_command = f'sed -i "/    AQUI/{{N;d;}}" {tarefas_filename} && sed -i "s/    AQUI//" {tarefas_filename}'
     subprocess.run(sed_command, shell=True)
 
 
