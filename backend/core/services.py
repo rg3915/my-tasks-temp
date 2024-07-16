@@ -1,3 +1,4 @@
+import subprocess
 import json
 import os
 from collections import defaultdict
@@ -40,6 +41,24 @@ def check_if_the_date_already_exists(filename, milestone_title):
             print(f"Date {date_format} added to the file {filename}.")
 
 
+def write_tarefas(task):
+    # Escreve lorem na segunda linha depois do match.
+    # n;n;n; significa três next.
+    sprint = Sprint.objects.filter(project=task.project).last()
+    tarefas_filename = f'{FOLDER_BASE}/{sprint.project.customer.name}/{sprint.project.title}/tarefas.txt'
+
+    task = f'{task.issue.number} - {task.title}'
+
+    lorem = 'lorem'
+    sed_command = 'sed -i "/\\] ' + task + '/{n;n;n;s/.*/' + lorem + '/}" ' + tarefas_filename
+    subprocess.run(sed_command, shell=True)
+
+    # Substitui lorem por AQUI
+    asterisco = '\\n    AQUI'
+    sed_command = f'sed -i "s/{lorem}/{asterisco}/" {tarefas_filename}'
+    subprocess.run(sed_command, shell=True)
+
+
 def write_on_tarefas(filename, issue, labels, is_bug):
     today = date.today().strftime('%d/%m/%y')
 
@@ -67,12 +86,15 @@ def write_on_tarefas(filename, issue, labels, is_bug):
 
         f.write(f"    cd ~/gitlab/my-tasks; sa; m start_task -p='{project}' -t={issue.number} -ph=True\n")
 
-        f.write(f"    workon {customer}; python cli/task.py -c start -p {project} -t {issue.number} --previous_hour\n\n")
+        if project == 'ekoospregao':
+            f.write(f"    workon {customer}; python cli/task.py -c start -p {project} -t {issue.number} --previous_hour\n\n")
 
         f.write(f"    _gadd '{title}. close #{issue.number}'; # gp\n\n")
 
         f.write(f"    cd ~/gitlab/my-tasks; sa; m stop_task -p='{project}' -t={issue.number}\n")
-        f.write(f"    workon {customer}; python cli/task.py -c end -p {project} -t {issue.number}\n")
+
+        if project == 'ekoospregao':
+            f.write(f"    workon {customer}; python cli/task.py -c end -p {project} -t {issue.number}\n")
 
 
 def write_changelog_dropbox(issue):

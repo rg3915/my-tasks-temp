@@ -7,7 +7,7 @@ from django.core.management.base import BaseCommand
 from rich import print
 from rich.console import Console
 
-from backend.core.services import create_timesheet, write_changelog_dropbox
+from backend.core.services import create_timesheet, write_changelog_dropbox, write_tarefas
 from backend.project.models import Project
 from backend.task.models import Task, Timesheet
 
@@ -41,6 +41,8 @@ def start_task_command(options):
     else:
         print(f'Start issue: {task.issue.number} - {task}')
         timesheet = create_timesheet(task, options['previous_hour'])
+
+        write_tarefas(task)
 
         write_changelog_dropbox(task.issue)
 
