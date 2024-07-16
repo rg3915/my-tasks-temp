@@ -1,6 +1,6 @@
-import subprocess
 import json
 import os
+import subprocess
 from collections import defaultdict
 from datetime import date, datetime, timedelta
 from pprint import pprint
@@ -59,6 +59,17 @@ def write_tarefas(task):
     subprocess.run(sed_command, shell=True)
 
 
+def remove_aqui_from_tarefas(task):
+    """
+    Remove AQUI de tarefas.txt
+    """
+    sprint = Sprint.objects.filter(project=task.project).last()
+    tarefas_filename = f'{FOLDER_BASE}/{sprint.project.customer.name}/{sprint.project.title}/tarefas.txt'
+
+    sed_command = f'sed -i "s/    AQUI//" {tarefas_filename}'
+    subprocess.run(sed_command, shell=True)
+
+
 def write_on_tarefas(filename, issue, labels, is_bug):
     today = date.today().strftime('%d/%m/%y')
 
@@ -87,7 +98,8 @@ def write_on_tarefas(filename, issue, labels, is_bug):
         f.write(f"    cd ~/gitlab/my-tasks; sa; m start_task -p='{project}' -t={issue.number} -ph=True\n")
 
         if project == 'ekoospregao':
-            f.write(f"    workon {customer}; python cli/task.py -c start -p {project} -t {issue.number} --previous_hour\n\n")
+            f.write(
+                f"    workon {customer}; python cli/task.py -c start -p {project} -t {issue.number} --previous_hour\n\n")
 
         f.write(f"    _gadd '{title}. close #{issue.number}'; # gp\n\n")
 

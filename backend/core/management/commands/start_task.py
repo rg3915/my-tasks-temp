@@ -7,7 +7,11 @@ from django.core.management.base import BaseCommand
 from rich import print
 from rich.console import Console
 
-from backend.core.services import create_timesheet, write_changelog_dropbox, write_tarefas
+from backend.core.services import (
+    create_timesheet,
+    write_changelog_dropbox,
+    write_tarefas
+)
 from backend.project.models import Project
 from backend.task.models import Task, Timesheet
 

@@ -7,7 +7,7 @@ from django.core.management.base import BaseCommand
 from rich import print
 from rich.console import Console
 
-from backend.core.services import stop_timesheet
+from backend.core.services import remove_aqui_from_tarefas, stop_timesheet
 from backend.project.models import Project
 from backend.task.models import Task
 
@@ -37,6 +37,7 @@ def stop_task_command(options) -> bool:
 
     print(f'Stop issue: {task.issue.number} - {task}')
     stop_timesheet(task)
+    remove_aqui_from_tarefas(task)
     return True
 
 
