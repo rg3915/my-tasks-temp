@@ -54,7 +54,7 @@ def write_tarefas(task):
 
     # Substitui lorem por AQUI
     asterisco = '\\n    AQUI'
-    sed_command = f'sed -i "s/{lorem}/{asterisco}/" {tarefas_filename}'
+    sed_command = f'sed -i "s/{lorem}/{asterisco}\\n/" {tarefas_filename}'
     subprocess.run(sed_command, shell=True)
 
 
@@ -110,9 +110,9 @@ def write_on_tarefas(filename, issue, labels, is_bug):
 
         if project == 'ekoospregao':
             f.write(
-                f"    workon {customer}; python cli/task.py -c start -p {project} -t {issue.number} --previous_hour\n\n")
+                f"    workon {customer}; python cli/task.py -c start -p {project} -t {issue.number} --previous_hour\n")
 
-        f.write(f"    _gadd '{title}. close #{issue.number}'; # gp\n\n")
+        f.write(f"\n    _gadd '{title}. close #{issue.number}'; # gp\n\n")
 
         f.write(f"    cd ~/gitlab/my-tasks; sa; m stop_task -p='{project}' -t={issue.number}\n")
 
