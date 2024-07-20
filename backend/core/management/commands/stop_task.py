@@ -1,13 +1,18 @@
 '''
 m stop_task --project='my-tasks' --task=1
 '''
-import warnings
 import subprocess
+import warnings
+
 from django.core.management.base import BaseCommand
 from rich import print
 from rich.console import Console
 
-from backend.core.services import remove_aqui_from_tarefas, stop_timesheet, write_x_on_tarefas
+from backend.core.services import (
+    remove_aqui_from_tarefas,
+    stop_timesheet,
+    write_x_on_tarefas
+)
 from backend.project.models import Project
 from backend.task.models import Task
 
