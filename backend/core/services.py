@@ -1,3 +1,4 @@
+from django.utils import timezone
 import json
 import os
 import subprocess
@@ -11,7 +12,7 @@ from openpyxl import Workbook, load_workbook, styles
 from rich import print
 from rich.console import Console
 
-from backend.core.utils import datetime_to_string
+from backend.core.utils import datetime_to_string, timedelta_to_string
 from backend.task.models import Issue, Label, Sprint, Task, Timesheet
 
 console = Console()
@@ -75,7 +76,7 @@ def write_x_on_tarefas(task):
     tarefas_filename = f'{FOLDER_BASE}/{sprint.project.customer.name}/{sprint.project.title}/tarefas.txt'
 
     task_text = f'{task.issue.number} - {task}'
-    print(task_text)
+    # print(task_text)
     escaped_task_text = task_text.replace("/", "\\/")  # Escape any slashes in the task_text
     command = f"sed -i 's/\\[ \\] {escaped_task_text}/\\[x\\] {escaped_task_text}/' {tarefas_filename}"
     subprocess.run(command, shell=True, check=True)
@@ -103,7 +104,11 @@ def write_on_tarefas(filename, issue, labels, is_bug):
         customer = issue.sprint.project.customer.name
         milestone = issue.milestone.title
 
-        f.write(f'    echo "* {title}. #{issue.number}" >> ~/{customer}/{project}/CHANGELOG.md\n')
+        if customer == 'euroled':
+            f.write(f'    echo "* {title}. #{issue.number}" >> ~/{customer}/CHANGELOG.md\n')
+        else:
+            f.write(f'    echo "* {title}. #{issue.number}" >> ~/{customer}/{project}/CHANGELOG.md\n')
+
         f.write(f'    echo "* {title}. #{issue.number}" >> ~/Dropbox/projetos/{customer}/{project}/changelog/CHANGELOG_{milestone}.md\n\n')  # noqa E501
 
         f.write(f"    cd ~/gitlab/my-tasks; sa; m start_task -p='{project}' -t={issue.number} -ph=True\n")
@@ -282,12 +287,19 @@ def create_timesheet(task, previous_hour):
 def stop_timesheet(task):
     now = datetime.now()
 
-    print(datetime_to_string(now, '%H:%M'))
+    # print(datetime_to_string(now, '%H:%M'))
 
     # Na verdade não precisa da task.
     timesheet = Timesheet.objects.filter(task=task, end_time__isnull=True).first()
     timesheet.end_time = now
     timesheet.save()
+
+    end_time = timezone.make_aware(timesheet.end_time)  # Convert to aware datetime
+
+    print()
+    total = str(end_time - timesheet.start_time)
+    print(f'Total: {total.split(".")[0]}')
+    print()
 
     return timesheet
 
