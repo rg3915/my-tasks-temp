@@ -1,4 +1,3 @@
-from django.utils import timezone
 import json
 import os
 import subprocess
@@ -8,6 +7,7 @@ from datetime import date, datetime, timedelta
 import gitlab
 import requests
 from decouple import config
+from django.utils import timezone
 from openpyxl import Workbook, load_workbook, styles
 from rich import print
 from rich.console import Console
