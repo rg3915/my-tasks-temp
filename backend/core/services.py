@@ -105,7 +105,7 @@ def write_on_tarefas(filename, issue, labels, is_bug):
         milestone = issue.milestone.title
 
         if customer == 'euroled':
-            f.write('python ~/gitlab/my-tasks/backend/core/write_changelog_euroled.py')
+            f.write('    python ~/gitlab/my-tasks/backend/core/write_changelog_euroled.py\n')
             f.write(f'    echo "* {title}. #{issue.number}" >> ~/{customer}/CHANGELOG.md\n')
         else:
             f.write(f'    echo "* {title}. #{issue.number}" >> ~/{customer}/{project}/CHANGELOG.md\n')
