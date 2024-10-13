@@ -43,6 +43,7 @@ def create_project(customer, project, repository_name):
         repository_url=repository_url,
         repository_owner=repository_owner,
     )
+    print('Preencher github_token em project.')
     return project
 
 
