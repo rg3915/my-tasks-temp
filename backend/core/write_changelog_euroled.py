@@ -1,5 +1,5 @@
-from datetime import datetime
 import subprocess
+from datetime import datetime
 
 
 def check_if_the_date_already_exists(filename):

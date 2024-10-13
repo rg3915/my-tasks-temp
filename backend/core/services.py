@@ -1,5 +1,6 @@
 import json
 import os
+import re
 import subprocess
 from collections import defaultdict
 from datetime import date, datetime, timedelta
@@ -19,6 +20,42 @@ console = Console()
 
 
 FOLDER_BASE = '/home/regis/Dropbox/projetos'
+
+
+CONJUGATIONS = {
+    "adicionar": "adiciona",
+    "cadastrar": "cadastra",
+    "calcular": "calcula",
+    "corrigir": "corrige",
+    "criar": "cria",
+    "deletar": "deleta",
+    "editar": "edita",
+    "entregar": "entrega",
+    "enviar": "envia",
+    "gerar": "gera",
+    "processar": "processa",
+}
+
+
+def conjugate_infinitive(sentence):
+    # Função para substituir verbos no infinitivo pela forma conjugada
+    def replace_verb(match):
+        verb = match.group(0)
+        conjugated = CONJUGATIONS.get(verb.lower(), verb)  # Busca a forma conjugada em minúsculas
+
+        # Mantém a capitalização se a primeira letra do verbo original for maiúscula
+        if verb[0].isupper():
+            conjugated = conjugated.capitalize()
+
+        return conjugated
+
+    # Padrão para encontrar verbos no infinitivo
+    infinitive_pattern = r"\b(\w+ar|\w+er|\w+ir)\b"
+
+    # Substituir verbos no infinitivo pela conjugação correta
+    conjugated_sentence = re.sub(infinitive_pattern, replace_verb, sentence)
+
+    return conjugated_sentence
 
 
 def check_if_the_date_already_exists(filename, milestone_title):
@@ -96,7 +133,7 @@ def write_on_tarefas(filename, issue, labels, is_bug):
         if issue.description:
             f.write(f'    {issue.description}\n\n')
 
-        title = issue.title
+        title = conjugate_infinitive(issue.title)
         if is_bug:
             title = f'bugfix: {title}'
 
