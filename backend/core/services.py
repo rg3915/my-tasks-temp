@@ -33,6 +33,7 @@ CONJUGATIONS = {
     "entregar": "entrega",
     "enviar": "envia",
     "gerar": "gera",
+    "instalar": "instala",
     "processar": "processa",
 }
 
