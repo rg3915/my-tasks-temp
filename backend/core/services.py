@@ -23,18 +23,23 @@ FOLDER_BASE = '/home/regis/Dropbox/projetos'
 
 
 CONJUGATIONS = {
-    "adicionar": "adiciona",
-    "cadastrar": "cadastra",
-    "calcular": "calcula",
-    "corrigir": "corrige",
-    "criar": "cria",
-    "deletar": "deleta",
-    "editar": "edita",
-    "entregar": "entrega",
-    "enviar": "envia",
-    "gerar": "gera",
-    "instalar": "instala",
-    "processar": "processa",
+    'adicionar': 'adiciona',
+    'aplicar': 'aplica',
+    'cadastrar': 'cadastra',
+    'calcular': 'calcula',
+    'corrigir': 'corrige',
+    'criar': 'cria',
+    'deletar': 'deleta',
+    'editar': 'edita',
+    'entregar': 'entrega',
+    'enviar': 'envia',
+    'gerar': 'gera',
+    'imprimir': 'imprime',
+    'instalar': 'instala',
+    'processar': 'processa',
+    'remover': 'remove',
+    'retornar': 'retorna',
+    'salvar': 'salva',
 }
 
 
@@ -145,6 +150,8 @@ def write_on_tarefas(filename, issue, labels, is_bug):
         if customer == 'euroled':
             f.write('    python ~/gitlab/my-tasks/backend/core/write_changelog_euroled.py\n')
             f.write(f'    echo "* {title}. #{issue.number}" >> ~/{customer}/CHANGELOG.md\n')
+        elif customer == 'ledsoft':
+            f.write(f'    echo "* {title}. #{issue.number}" >> ~/my/{project}/CHANGELOG.md\n')
         else:
             f.write(f'    echo "* {title}. #{issue.number}" >> ~/{customer}/{project}/CHANGELOG.md\n')
 
