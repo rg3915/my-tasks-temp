@@ -152,6 +152,8 @@ def write_on_tarefas(filename, issue, labels, is_bug):
             f.write(f'    echo "* {title}. #{issue.number}" >> ~/{customer}/CHANGELOG.md\n')
         elif customer == 'ledsoft':
             f.write(f'    echo "* {title}. #{issue.number}" >> ~/my/{project}/CHANGELOG.md\n')
+        elif customer == 'numb3rs':
+            f.write('    python ~/gitlab/my-tasks/backend/core/write_changelog.py -c numb3rs -p contratualizacao\n')
         else:
             f.write(f'    echo "* {title}. #{issue.number}" >> ~/{customer}/{project}/CHANGELOG.md\n')
 
