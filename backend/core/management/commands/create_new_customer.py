@@ -19,7 +19,6 @@ from backend.crm.models import Customer
 from backend.project.models import Owner, Project
 from backend.task.models import Milestone, Sprint
 
-
 warnings.filterwarnings('ignore')
 
 

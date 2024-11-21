@@ -13,7 +13,7 @@ from openpyxl import Workbook, load_workbook, styles
 from rich import print
 from rich.console import Console
 
-from backend.core.utils import datetime_to_string, timedelta_to_string
+from backend.core.utils import datetime_to_string
 from backend.task.models import Issue, Label, Sprint, Task, Timesheet
 
 console = Console()
@@ -125,52 +125,184 @@ def write_x_on_tarefas(task):
     subprocess.run(command, shell=True, check=True)
 
 
-def write_on_tarefas(filename, issue, labels, is_bug):
-    today = date.today().strftime('%d/%m/%y')
+# def write_on_tarefas_old(filename, issue, labels, is_bug):
+#     today = date.today().strftime('%d/%m/%y')
 
+#     _labels = ','.join(labels)
+
+#     with open(filename, 'a') as f:
+#         f.write('\n---\n\n')
+#         f.write(f'[ ] {issue.number} - {issue.title}\n')
+#         f.write(f'    {_labels}\n')
+#         f.write(f'    {today}\n\n\n')
+
+#         if issue.description:
+#             f.write(f'    {issue.description}\n\n')
+
+#         title = conjugate_infinitive(issue.title)
+#         if is_bug:
+#             title = f'bugfix: {title}'
+
+#         project = issue.sprint.project.title
+#         customer = issue.sprint.project.customer.name
+#         milestone = issue.milestone.title
+
+#         if customer == 'euroled':
+#             f.write('    python ~/gitlab/my-tasks/backend/core/write_changelog_euroled.py\n')
+#             f.write(f'    echo "* {title}. #{issue.number}" >> ~/{customer}/CHANGELOG.md\n')
+#         elif customer == 'ledsoft':
+#             f.write(f'    echo "* {title}. #{issue.number}" >> ~/my/{project}/CHANGELOG.md\n')
+#         elif customer == 'numb3rs':
+#             f.write('    python ~/gitlab/my-tasks/backend/core/write_changelog.py -c numb3rs -p contratualizacao\n')
+#             f.write(f'    echo "* {title}. #{issue.number}" >> ~/Dropbox/projetos/{customer}/{project}/changelog/CHANGELOG_{milestone}.md\n\n')  # noqa E501
+#         else:
+#             f.write(f'    echo "* {title}. #{issue.number}" >> ~/{customer}/{project}/CHANGELOG.md\n')
+
+#         f.write(f'    echo "* {title}. #{issue.number}" >> ~/Dropbox/projetos/{customer}/{project}/changelog/CHANGELOG_{milestone}.md\n\n')  # noqa E501
+
+#         f.write(f"    cd ~/gitlab/my-tasks; sa; m start_task -p='{project}' -t={issue.number} -ph=True\n")
+
+#         if project == 'ekoospregao':
+#             f.write(
+#                 f"    workon {customer}; python cli/task.py -c start -p {project} -t {issue.number} --previous_hour\n")
+
+#         f.write(f"\n    _gadd '{title}. close #{issue.number}'; # gp\n\n")
+
+#         f.write(f"    cd ~/gitlab/my-tasks; sa; m stop_task -p='{project}' -t={issue.number}\n")
+
+#         if project == 'ekoospregao':
+#             f.write(f"    workon {customer}; python cli/task.py -c end -p {project} -t {issue.number}\n")
+
+
+# --------------------------
+
+
+def get_changelog_paths(customer: str, project: str) -> list[str]:
+    """
+    Gera caminhos de changelog apropriados com base no cliente e projeto.
+
+    Args:
+        customer (str): Nome do cliente
+        project (str): Nome do projeto
+        milestone (str, opcional): Título do milestone
+
+    Returns:
+        list: Lista de caminhos de arquivos de changelog para atualizar
+    """
+    changelog_paths: list[str] = []
+
+    # Caminhos de changelog específicos por cliente
+    customer_paths = {
+        'euroled': f'~/{customer}/CHANGELOG.md',
+        'numb3rs': f'~/nu/{project}/CHANGELOG.md',
+        'ledsoft': f'~/my/{project}/CHANGELOG.md',
+        'default': f'~/{customer}/{project}/CHANGELOG.md'
+    }
+
+    # Adiciona caminho de changelog principal baseado no cliente
+    primary_path = customer_paths.get(customer, customer_paths['default'])
+    changelog_paths.append(primary_path)
+
+    copy_changelog_dropbox_path = f'cp {primary_path} ~/Dropbox/projetos/{customer}/{project}/changelog/CHANGELOG.md'
+    changelog_paths.append(copy_changelog_dropbox_path)
+
+    return changelog_paths
+
+
+def get_changelog_command(customer: str, project: str):
+    """
+    Gera comando de escrita de changelog baseado no cliente e projeto.
+
+    Args:
+        customer (str): Nome do cliente
+        project (str): Nome do projeto
+
+    Returns:
+        str ou None: Comando para escrever changelog, se aplicável
+    """
+    changelog_commands = {
+        ('numb3rs', 'contratualizacao'):
+            'python ~/gitlab/my-tasks/backend/core/write_changelog.py -c numb3rs -p contratualizacao',
+        ('numb3rs', 'plansus'):
+            'python ~/gitlab/my-tasks/backend/core/write_changelog.py -c numb3rs -p plansus',
+        ('euroled', None):
+            'python ~/gitlab/my-tasks/backend/core/write_changelog_euroled.py'
+    }
+
+    return changelog_commands.get((customer, project))
+
+
+def write_on_tarefas(filename: str, issue, labels: list[str], is_bug: bool) -> None:
+    """
+    Escreve detalhes do issue em um arquivo de rastreamento de tarefas
+    com tratamento flexível de changelog.
+
+    Args:
+        filename (str): Arquivo de destino para escrever tarefas
+        issue (Issue): Objeto de issue com detalhes
+        labels (list): Lista de labels
+        is_bug (bool): Se o issue é um bug
+        conjugate_infinitive: Função para conjugar título
+    """
+    today = date.today().strftime('%d/%m/%y')
     _labels = ','.join(labels)
 
+    # Prepara detalhes do issue
+    title = issue.title
+    title = f'bugfix: {title}' if is_bug else title
+    conjugated_title = conjugate_infinitive(title)
+
+    # Determina detalhes do projeto e cliente
+    project = issue.sprint.project.title
+    customer = issue.sprint.project.customer.name
+    # milestone = issue.milestone
+    # milestone_title = milestone.title if milestone else None
+
     with open(filename, 'a') as f:
+        # Informações básicas do issue
         f.write('\n---\n\n')
         f.write(f'[ ] {issue.number} - {issue.title}\n')
         f.write(f'    {_labels}\n')
         f.write(f'    {today}\n\n\n')
 
+        # Descrição opcional
         if issue.description:
             f.write(f'    {issue.description}\n\n')
 
-        title = conjugate_infinitive(issue.title)
-        if is_bug:
-            title = f'bugfix: {title}'
+        # Comando de changelog (se aplicável)
+        changelog_command = get_changelog_command(customer, project)
+        if changelog_command:
+            f.write(f'    {changelog_command}\n')
 
-        project = issue.sprint.project.title
-        customer = issue.sprint.project.customer.name
-        milestone = issue.milestone.title
+        # Escreve em arquivos de changelog
+        changelog_paths = get_changelog_paths(customer, project)
 
-        if customer == 'euroled':
-            f.write('    python ~/gitlab/my-tasks/backend/core/write_changelog_euroled.py\n')
-            f.write(f'    echo "* {title}. #{issue.number}" >> ~/{customer}/CHANGELOG.md\n')
-        elif customer == 'ledsoft':
-            f.write(f'    echo "* {title}. #{issue.number}" >> ~/my/{project}/CHANGELOG.md\n')
-        elif customer == 'numb3rs':
-            f.write('    python ~/gitlab/my-tasks/backend/core/write_changelog.py -c numb3rs -p contratualizacao\n')
-        else:
-            f.write(f'    echo "* {title}. #{issue.number}" >> ~/{customer}/{project}/CHANGELOG.md\n')
+        # A primeira linha é para escrever a tarefa no CHANGELOG.
+        path = changelog_paths[0]
+        f.write(f'    echo "* {conjugated_title}. #{issue.number}" >> {path}; tail {path}\n')
 
-        f.write(f'    echo "* {title}. #{issue.number}" >> ~/Dropbox/projetos/{customer}/{project}/changelog/CHANGELOG_{milestone}.md\n\n')  # noqa E501
+        # A segunda linha é para escrever o comando que copiar o CHANGELOG para o Dropbox.
+        copy_path = changelog_paths[1]
+        f.write(f'    {copy_path}\n')
 
-        f.write(f"    cd ~/gitlab/my-tasks; sa; m start_task -p='{project}' -t={issue.number} -ph=True\n")
+        # Comandos de gerenciamento de tarefa
+        f.write(f"\n    cd ~/gitlab/my-tasks; sa; m start_task -p='{project}' -t={issue.number} -ph=True\n")
 
+        # Comandos de início de tarefa específicos do projeto
         if project == 'ekoospregao':
             f.write(
                 f"    workon {customer}; python cli/task.py -c start -p {project} -t {issue.number} --previous_hour\n")
 
-        f.write(f"\n    _gadd '{title}. close #{issue.number}'; # gp\n\n")
-
+        # Git e gerenciamento de tarefa
+        f.write(f"\n    _gadd '{conjugated_title}. close #{issue.number}'; # gp\n\n")
         f.write(f"    cd ~/gitlab/my-tasks; sa; m stop_task -p='{project}' -t={issue.number}\n")
 
+        # Comandos de término de tarefa específicos do projeto
         if project == 'ekoospregao':
             f.write(f"    workon {customer}; python cli/task.py -c end -p {project} -t {issue.number}\n")
+
+
+# --------------------------
 
 
 def write_changelog_dropbox(issue):
@@ -195,6 +327,9 @@ def save_issue(data):
     labels = Label.objects.filter(label__in=data['labels'])
     sprint = Sprint.objects.filter(project=data['project']).last()
 
+    # Teste
+    # sprint = Sprint.objects.filter(project__title='plansus').last()
+
     issue = Issue.objects.create(
         number=data['iid'],
         title=data['title'],
@@ -205,6 +340,9 @@ def save_issue(data):
     )
     for label in labels:
         issue.labels.add(label)
+
+    # Teste
+    # issue = Issue.objects.last()
 
     filename = f'{FOLDER_BASE}/{sprint.project.customer.name}/{sprint.project.title}/tarefas.txt'
 
@@ -218,6 +356,9 @@ def save_issue(data):
     is_bug = False
     if 'bug' in data['labels']:
         is_bug = True
+
+    # # Teste
+    # data['labels'] = 'backend'
 
     write_on_tarefas(filename, issue, data['labels'], is_bug)
     return issue

@@ -48,7 +48,8 @@ def start_task_command(options):
 
         write_tarefas(task)
 
-        write_changelog_dropbox(task.issue)
+        # Não usa mais
+        # write_changelog_dropbox(task.issue)
 
         if options['previous_hour']:
             return True, True, timesheet

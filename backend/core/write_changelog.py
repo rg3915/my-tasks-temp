@@ -1,9 +1,11 @@
 """
 python ~/gitlab/my-tasks/backend/core/write_changelog.py -c numb3rs -p contratualizacao
+python ~/gitlab/my-tasks/backend/core/write_changelog.py -c numb3rs -p plansus
 """
-import click
 import subprocess
 from datetime import datetime
+
+import click
 
 
 def check_if_the_date_already_exists(filename):
@@ -20,14 +22,15 @@ def check_if_the_date_already_exists(filename):
                 file.write(f"\n## {date_format}\n\n")
             print(f"Date {date_format} added to the file {filename}.")
 
-            subprocess.run(f'tail {filename}', shell=True)
+            # Nao usa mais
+            # subprocess.run(f'tail {filename}', shell=True)
 
 
 @click.command()
 @click.option('--customer', '-c', help='Type customer.')
 @click.option('--project', '-p', help='Type project.')
 def write_changelog(customer, project):
-    BASE_FOLDER = '/home/regis/'
+    BASE_FOLDER = '/home/regis'
     project_folder = ''
 
     if customer == 'numb3rs':
