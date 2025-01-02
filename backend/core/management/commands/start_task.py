@@ -1,5 +1,5 @@
 '''
-m start_task --project='my-tasks' --task=1 -ph=True
+m start_task --project='my-tasks' --task=1
 '''
 import warnings
 
@@ -9,7 +9,6 @@ from rich.console import Console
 
 from backend.core.services import (
     create_timesheet,
-    write_changelog_dropbox,
     write_tarefas
 )
 from backend.project.models import Project
@@ -23,7 +22,7 @@ warnings.filterwarnings('ignore')
 def start_task_command(options):
     '''
     Return a tuple.
-    timesheet_not_finalized, previous_hour, timesheet
+    timesheet_not_finalized, timesheet
     '''
     # get project
     project = Project.objects.filter(title=options['project']).first()
@@ -44,15 +43,13 @@ def start_task_command(options):
         return False, False, None
     else:
         print(f'Start issue: {task.issue.number} - {task}')
-        timesheet = create_timesheet(task, options['previous_hour'])
+        # timesheet = create_timesheet(task, options['previous_hour'])
+        timesheet = create_timesheet(task)
 
         write_tarefas(task)
 
-        # Não usa mais
-        # write_changelog_dropbox(task.issue)
-
-        if options['previous_hour']:
-            return True, True, timesheet
+        # if options['previous_hour']:
+        #     return True, True, timesheet
 
         return True, False, timesheet
 
@@ -63,7 +60,7 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument('--project', '-p', type=str, help='Type the name of project.')
         parser.add_argument('--task', '-t', type=str, help='Type the number of task.')
-        parser.add_argument('--previous_hour', '-ph', type=bool, default=False, help='Start new hour with previous hour.')  # noqa E501
+        # parser.add_argument('--previous_hour', '-ph', type=bool, default=False, help='Start new hour with previous hour.')  # noqa E501
 
     def handle(self, *args, **options):
         start_task_command(options)

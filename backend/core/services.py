@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta
 import json
 import os
 import re
@@ -286,7 +287,7 @@ def write_on_tarefas(filename: str, issue, labels: list[str], is_bug: bool) -> N
         f.write(f'    {copy_path}\n')
 
         # Comandos de gerenciamento de tarefa
-        f.write(f"\n    cd ~/gitlab/my-tasks; sa; m start_task -p='{project}' -t={issue.number} -ph=True\n")
+        f.write(f"\n    cd ~/gitlab/my-tasks; sa; m start_task -p='{project}' -t={issue.number}\n")
 
         # Comandos de início de tarefa específicos do projeto
         if project == 'ekoospregao':
@@ -457,19 +458,53 @@ def update_task(issue):
     task.save()
 
 
-def create_timesheet(task, previous_hour):
-    now = datetime.now()
-    start_time = datetime.now()
+# def create_timesheet_old(task, previous_hour):
+#     now = datetime.now()
+#     start_time = datetime.now()
 
-    if previous_hour:
-        # TODO: verificar se é do mesmo projeto.
-        last_hour = Timesheet.objects.first()  # é o último por causa da ordenação.
-        start_time = last_hour.end_time
+#     if previous_hour:
+#         # TODO: verificar se é do mesmo projeto.
+#         last_hour = Timesheet.objects.first()  # é o último por causa da ordenação.
+#         start_time = last_hour.end_time
+#         print('start:', datetime_to_string(start_time - timedelta(hours=3), '%H:%M'))
+#         print('now:', datetime_to_string(now, '%H:%M'))
+#     else:
+#         print(datetime_to_string(start_time, '%H:%M'))
+
+#     return Timesheet.objects.create(task=task, start_time=start_time)
+
+
+def create_timesheet(task):
+    # Obtém o momento atual com informação de timezone
+    now = timezone.now()
+
+    # Busca o último registro de timesheet (assumindo ordenação por mais recente)
+    last_hour = Timesheet.objects.first()
+
+    if last_hour:
+        # Calcula a diferença de tempo entre agora e o último registro
+        # Ambos os horários precisam ter informação de timezone para fazer a subtração
+        time_diff = now - last_hour.end_time
+
+        # Converte a diferença de tempo para minutos para facilitar a comparação
+        diff_minutes = time_diff.total_seconds() / 60
+
+        # Se a diferença for menor que 15:01 (15 minutos e 1 segundo),
+        # usa o horário de término do último registro como início
+        if diff_minutes < 15.02:  # usa 15.02 para considerar possíveis milissegundos
+            start_time = last_hour.end_time
+        else:
+            # Se passou muito tempo, inicia com o horário atual
+            start_time = now
+
         print('start:', datetime_to_string(start_time - timedelta(hours=3), '%H:%M'))
-        print('now:', datetime_to_string(now, '%H:%M'))
+        print('now:', datetime_to_string(now - timedelta(hours=3), '%H:%M'))
     else:
+        # Se não existe registro anterior, usa o horário atual
+        start_time = now
         print(datetime_to_string(start_time, '%H:%M'))
 
+    # Cria e retorna um novo registro de timesheet
     return Timesheet.objects.create(task=task, start_time=start_time)
 
 
