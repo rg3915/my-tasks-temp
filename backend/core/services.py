@@ -491,7 +491,10 @@ def create_timesheet(task):
 
         # Se a diferença for menor que 15:01 (15 minutos e 1 segundo),
         # usa o horário de término do último registro como início
-        if diff_minutes < 15.02:  # usa 15.02 para considerar possíveis milissegundos
+
+        # usa 15.02 para considerar possíveis milissegundos
+        # Verifica se é o mesmo projeto.
+        if diff_minutes < 15.02 and task.project == last_hour.task.project:
             start_time = last_hour.end_time
         else:
             # Se passou muito tempo, inicia com o horário atual
