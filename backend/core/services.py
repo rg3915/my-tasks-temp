@@ -1,3 +1,6 @@
+"""
+Veja get_changelog_paths
+"""
 import json
 import os
 import re
@@ -193,6 +196,7 @@ def get_changelog_paths(customer: str, project: str) -> list[str]:
 
     # Caminhos de changelog específicos por cliente
     customer_paths = {
+        'dvr': f'~/dvr/{customer}/CHANGELOG.md',
         'euroled': f'~/{customer}/CHANGELOG.md',
         'numb3rs': f'~/nu/{project}/CHANGELOG.md',
         'ledsoft': f'~/my/{project}/CHANGELOG.md',
