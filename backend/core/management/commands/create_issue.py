@@ -19,6 +19,8 @@ m create_issue \
 --body='Criar issue por linha de comando.' \
 --labels='backend' \
 --milestone='1'  # milestone.original_id
+
+Veja get_changelog_paths
 '''
 import warnings
 

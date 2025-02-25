@@ -22,24 +22,34 @@ def progressbar(it, prefix="", size=60, file=sys.stdout):
     file.flush()
 
 
-def gen_short_title():
-    return fake.sentence(nb_words=3).replace('.', '')
+def gen_fake_data(data_type, **kwargs):
+    """
+    Gera dados falsos com base no tipo especificado e parâmetros adicionais.
 
+    :param data_type: Tipo de dado a ser gerado ('short_title', 'title', 'phrase', 'name', 'company')
+    :param kwargs: Parâmetros adicionais para personalizar a geração de dados
+    :return: Dado falso gerado
+    """
+    if data_type == 'short_title':
+        return fake.sentence(nb_words=3).replace('.', '')
+    elif data_type == 'title':
+        return fake.sentence()
+    elif data_type == 'phrase':
+        n = kwargs.get('n', 5)
+        return ' '.join(fake.texts(nb_texts=n))
+    elif data_type == 'name':
+        return fake.first_name()
+    elif data_type == 'company':
+        return fake.company()
+    else:
+        raise ValueError(f"Tipo de dado não suportado: {data_type}")
 
-def gen_title():
-    return fake.sentence()
-
-
-def gen_phrase(n=5):
-    return ' '.join(fake.texts(nb_texts=n))
-
-
-def gen_name():
-    return fake.first_name()
-
-
-def gen_company():
-    return fake.company()
+# Exemplos de uso:
+# gen_fake_data('short_title')
+# gen_fake_data('title')
+# gen_fake_data('phrase', n=3)
+# gen_fake_data('name')
+# gen_fake_data('company')
 
 
 def datetime_to_string(value, format='%Y-%m-%d %H:%M:%S'):
