@@ -287,12 +287,17 @@ def write_changelog_dropbox(issue):
 
 
 def save_issue(data):
+    # Mapeamento de nomes de clientes para seus diretórios
+    CUSTOMER_FOLDER_MAPPING = {
+        'DVR-Industrial': 'dvr',
+        # Outros mapeamentos podem ser adicionados aqui
+    }
+
+    # Obter objetos relacionados do banco de dados
     labels = Label.objects.filter(label__in=data['labels'])
     sprint = Sprint.objects.filter(project=data['project']).last()
 
-    # Teste
-    # sprint = Sprint.objects.filter(project__title='plansus').last()
-
+    # Criar o registro da issue
     issue = Issue.objects.create(
         number=data['iid'],
         title=data['title'],
@@ -301,34 +306,24 @@ def save_issue(data):
         sprint=sprint,
         url=data['web_url'],
     )
-    for label in labels:
-        issue.labels.add(label)
 
-    # Teste
-    # issue = Issue.objects.last()
+    # Adicionar labels à issue
+    issue.labels.add(*labels)
 
-    if sprint.project.customer.name == 'DVR-Industrial':
-        customer_name = 'dvr'
-    else:
-        customer_name = sprint.project.customer.name
+    # Determinar o nome da pasta do cliente usando o mapeamento
+    customer_name = sprint.project.customer.name
+    folder_name = CUSTOMER_FOLDER_MAPPING.get(customer_name, customer_name.lower())
 
-    filename = f'{FOLDER_BASE}/{customer_name}/{sprint.project.title}/tarefas.txt'
+    # Preparar informações para arquivo de tarefas
+    filename = f'{FOLDER_BASE}/{folder_name}/{sprint.project.title}/tarefas.txt'
+    is_bug = 'bug' in data['labels']
 
-    number = data['iid']
-    title = data['title']
+    # Registrar informações para debug (opcional)
+    print(f"Gravando issue #{data['iid']} - {data['title']} em {filename}")
 
-    print(filename)
-    print(number)
-    print(title)
-
-    is_bug = False
-    if 'bug' in data['labels']:
-        is_bug = True
-
-    # # Teste
-    # data['labels'] = 'backend'
-
+    # Escrever no arquivo de tarefas
     write_on_tarefas(filename, issue, data['labels'], is_bug)
+
     return issue
 
 
