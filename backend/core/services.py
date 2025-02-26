@@ -128,92 +128,49 @@ def write_x_on_tarefas(task):
     subprocess.run(command, shell=True, check=True)
 
 
-# def write_on_tarefas_old(filename, issue, labels, is_bug):
-#     today = date.today().strftime('%d/%m/%y')
-
-#     _labels = ','.join(labels)
-
-#     with open(filename, 'a') as f:
-#         f.write('\n---\n\n')
-#         f.write(f'[ ] {issue.number} - {issue.title}\n')
-#         f.write(f'    {_labels}\n')
-#         f.write(f'    {today}\n\n\n')
-
-#         if issue.description:
-#             f.write(f'    {issue.description}\n\n')
-
-#         title = conjugate_infinitive(issue.title)
-#         if is_bug:
-#             title = f'bugfix: {title}'
-
-#         project = issue.sprint.project.title
-#         customer = issue.sprint.project.customer.name
-#         milestone = issue.milestone.title
-
-#         if customer == 'euroled':
-#             f.write('    python ~/gitlab/my-tasks/backend/core/write_changelog_euroled.py\n')
-#             f.write(f'    echo "* {title}. #{issue.number}" >> ~/{customer}/CHANGELOG.md\n')
-#         elif customer == 'ledsoft':
-#             f.write(f'    echo "* {title}. #{issue.number}" >> ~/my/{project}/CHANGELOG.md\n')
-#         elif customer == 'numb3rs':
-#             f.write('    python ~/gitlab/my-tasks/backend/core/write_changelog.py -c numb3rs -p contratualizacao\n')
-#             f.write(f'    echo "* {title}. #{issue.number}" >> ~/Dropbox/projetos/{customer}/{project}/changelog/CHANGELOG_{milestone}.md\n\n')  # noqa E501
-#         else:
-#             f.write(f'    echo "* {title}. #{issue.number}" >> ~/{customer}/{project}/CHANGELOG.md\n')
-
-#         f.write(f'    echo "* {title}. #{issue.number}" >> ~/Dropbox/projetos/{customer}/{project}/changelog/CHANGELOG_{milestone}.md\n\n')  # noqa E501
-
-#         f.write(f"    cd ~/gitlab/my-tasks; sa; m start_task -p='{project}' -t={issue.number} -ph=True\n")
-
-#         if project == 'ekoospregao':
-#             f.write(
-#                 f"    workon {customer}; python cli/task.py -c start -p {project} -t {issue.number} --previous_hour\n")
-
-#         f.write(f"\n    _gadd '{title}. close #{issue.number}'; # gp\n\n")
-
-#         f.write(f"    cd ~/gitlab/my-tasks; sa; m stop_task -p='{project}' -t={issue.number}\n")
-
-#         if project == 'ekoospregao':
-#             f.write(f"    workon {customer}; python cli/task.py -c end -p {project} -t {issue.number}\n")
-
-
-# --------------------------
-
-
 def get_changelog_paths(customer: str, project: str) -> list[str]:
     """
     Gera caminhos de changelog apropriados com base no cliente e projeto.
-
     Args:
         customer (str): Nome do cliente
         project (str): Nome do projeto
-        milestone (str, opcional): Título do milestone
-
     Returns:
         list: Lista de caminhos de arquivos de changelog para atualizar
     """
-    changelog_paths: list[str] = []
-
-    # Caminhos de changelog específicos por cliente
-    customer_paths = {
-        'dvr': f'~/dvr/{customer}/CHANGELOG.md',
-        'euroled': f'~/{customer}/CHANGELOG.md',
-        'numb3rs': f'~/nu/{project}/CHANGELOG.md',
-        'ledsoft': f'~/my/{project}/CHANGELOG.md',
-        'default': f'~/{customer}/{project}/CHANGELOG.md'
+    # Mapeamento de clientes para seus prefixos de pasta
+    customer_folder_mapping = {
+        'DVR-Industrial': 'dvr',
+        'euroled': 'euroled',
+        'numb3rs': 'nu',
+        'ledsoft': 'my'
+        # Outros clientes podem ser adicionados aqui
     }
 
-    # Adiciona caminho de changelog principal baseado no cliente
-    primary_path = customer_paths.get(customer, customer_paths['default'])
-    changelog_paths.append(primary_path)
+    # Mapeamento de clientes para formatos de caminhos primários
+    primary_path_formats = {
+        'DVR-Industrial': '~/{folder}/{project}/CHANGELOG.md',
+        'euroled': '~/{customer}/CHANGELOG.md',
+        'numb3rs': '~/{folder}/{project}/CHANGELOG.md',
+        'ledsoft': '~/{folder}/{project}/CHANGELOG.md',
+        'default': '~/{customer}/{project}/CHANGELOG.md'
+    }
 
-    copy_changelog_dropbox_path = f'cp {primary_path} ~/Dropbox/projetos/{customer}/{project}/changelog/CHANGELOG.md'
-    changelog_paths.append(copy_changelog_dropbox_path)
+    # Obter o formato do caminho primário baseado no cliente
+    primary_format = primary_path_formats.get(customer, primary_path_formats['default'])
 
-    return changelog_paths
+    # Obter o prefixo da pasta para o cliente (ou usar o nome do cliente como padrão)
+    folder = customer_folder_mapping.get(customer, customer.lower())
+
+    # Gerar o caminho primário
+    primary_path = primary_format.format(customer=customer, project=project, folder=folder)
+
+    # Gerar o caminho do Dropbox (uniforme para todos os clientes)
+    dropbox_path = f'cp {primary_path} ~/Dropbox/projetos/{folder}/{project}/changelog/CHANGELOG.md'
+
+    return [primary_path, dropbox_path]
 
 
-def get_changelog_command(customer: str, project: str):
+def get_changelog_command(customer: str, project: str) -> str:
     """
     Gera comando de escrita de changelog baseado no cliente e projeto.
 
@@ -283,7 +240,7 @@ def write_on_tarefas(filename: str, issue, labels: list[str], is_bug: bool) -> N
 
         # A primeira linha é para escrever a tarefa no CHANGELOG.
         path = changelog_paths[0]
-        f.write(f'    echo "* {conjugated_title}. #{issue.number}" >> {path}; tail {path}\n')
+        f.write(f'    echo "* {conjugated_title}. #{issue.number}" >> {path}\n')
 
         # A segunda linha é para escrever o comando que copiar o CHANGELOG para o Dropbox.
         copy_path = changelog_paths[1]
@@ -291,6 +248,8 @@ def write_on_tarefas(filename: str, issue, labels: list[str], is_bug: bool) -> N
 
         # Comandos de gerenciamento de tarefa
         f.write(f"\n    cd ~/gitlab/my-tasks; sa; m start_task -p='{project}' -t={issue.number}\n")
+
+        f.write(f"    tail {path}\n")
 
         # Comandos de início de tarefa específicos do projeto
         if project == 'ekoospregao':
@@ -348,7 +307,12 @@ def save_issue(data):
     # Teste
     # issue = Issue.objects.last()
 
-    filename = f'{FOLDER_BASE}/{sprint.project.customer.name}/{sprint.project.title}/tarefas.txt'
+    if sprint.project.customer.name == 'DVR-Industrial':
+        customer_name = 'dvr'
+    else:
+        customer_name = sprint.project.customer.name
+
+    filename = f'{FOLDER_BASE}/{customer_name}/{sprint.project.title}/tarefas.txt'
 
     number = data['iid']
     title = data['title']
