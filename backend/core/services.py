@@ -1,6 +1,3 @@
-"""
-Veja get_changelog_paths
-"""
 import json
 import os
 import re
@@ -44,6 +41,26 @@ CONJUGATIONS = {
     'retornar': 'retorna',
     'salvar': 'salva',
 }
+
+
+def get_changelog_paths(project) -> list[str]:
+    """
+    Gera caminho completo dos CHANGELOG.
+
+    Args:
+        project (str): Nome do projeto
+
+    Returns:
+        list: Lista de caminhos de arquivos de changelog para atualizar
+    """
+
+    # Gera o caminho do projeto
+    project_path = f'~/{project.project_folder}/CHANGELOG.md'
+
+    # Gera o caminho do Dropbox
+    dropbox_path = f'cp ~/{project.project_folder}/CHANGELOG.md ~/Dropbox/projetos/{project.dropbox_folder}/changelog/CHANGELOG.md'
+
+    return [project_path, dropbox_path]
 
 
 def conjugate_infinitive(sentence):
@@ -128,48 +145,6 @@ def write_x_on_tarefas(task):
     subprocess.run(command, shell=True, check=True)
 
 
-def get_changelog_paths(customer: str, project: str) -> list[str]:
-    """
-    Gera caminhos de changelog apropriados com base no cliente e projeto.
-    Args:
-        customer (str): Nome do cliente
-        project (str): Nome do projeto
-    Returns:
-        list: Lista de caminhos de arquivos de changelog para atualizar
-    """
-    # Mapeamento de clientes para seus prefixos de pasta
-    customer_folder_mapping = {
-        'DVR-Industrial': 'dvr',
-        'euroled': 'euroled',
-        'numb3rs': 'nu',
-        'ledsoft': 'my'
-        # Outros clientes podem ser adicionados aqui
-    }
-
-    # Mapeamento de clientes para formatos de caminhos primários
-    primary_path_formats = {
-        'DVR-Industrial': '~/{folder}/{project}/CHANGELOG.md',
-        'euroled': '~/{customer}/CHANGELOG.md',
-        'numb3rs': '~/{folder}/{project}/CHANGELOG.md',
-        'ledsoft': '~/{folder}/{project}/CHANGELOG.md',
-        'default': '~/{customer}/{project}/CHANGELOG.md'
-    }
-
-    # Obter o formato do caminho primário baseado no cliente
-    primary_format = primary_path_formats.get(customer, primary_path_formats['default'])
-
-    # Obter o prefixo da pasta para o cliente (ou usar o nome do cliente como padrão)
-    folder = customer_folder_mapping.get(customer, customer.lower())
-
-    # Gerar o caminho primário
-    primary_path = primary_format.format(customer=customer, project=project, folder=folder)
-
-    # Gerar o caminho do Dropbox (uniforme para todos os clientes)
-    dropbox_path = f'cp {primary_path} ~/Dropbox/projetos/{folder}/{project}/changelog/CHANGELOG.md'
-
-    return [primary_path, dropbox_path]
-
-
 def get_changelog_command(customer: str, project: str) -> str:
     """
     Gera comando de escrita de changelog baseado no cliente e projeto.
@@ -197,72 +172,62 @@ def write_on_tarefas(filename: str, issue, labels: list[str], is_bug: bool) -> N
     """
     Escreve detalhes do issue em um arquivo de rastreamento de tarefas
     com tratamento flexível de changelog.
-
-    Args:
-        filename (str): Arquivo de destino para escrever tarefas
-        issue (Issue): Objeto de issue com detalhes
-        labels (list): Lista de labels
-        is_bug (bool): Se o issue é um bug
-        conjugate_infinitive: Função para conjugar título
     """
     today = date.today().strftime('%d/%m/%y')
     _labels = ','.join(labels)
-
-    # Prepara detalhes do issue
-    title = issue.title
-    title = f'bugfix: {title}' if is_bug else title
-    conjugated_title = conjugate_infinitive(title)
-
-    # Determina detalhes do projeto e cliente
-    project = issue.sprint.project.title
+    project = issue.sprint.project
     customer = issue.sprint.project.customer.name
-    # milestone = issue.milestone
-    # milestone_title = milestone.title if milestone else None
 
     with open(filename, 'a') as f:
-        # Informações básicas do issue
-        f.write('\n---\n\n')
-        f.write(f'[ ] {issue.number} - {issue.title}\n')
-        f.write(f'    {_labels}\n')
-        f.write(f'    {today}\n\n\n')
+        write_issue_header(f, issue, _labels, today, is_bug)
+        write_issue_description(f, issue)
+        write_changelog_commands(f, customer, project, issue)
+        write_task_management_commands(f, project, issue)
+        write_git_commands(f, issue)
 
-        # Descrição opcional
-        if issue.description:
-            f.write(f'    {issue.description}\n\n')
 
-        # Comando de changelog (se aplicável)
-        changelog_command = get_changelog_command(customer, project)
-        if changelog_command:
-            f.write(f'    {changelog_command}\n')
+def write_issue_header(f, issue, labels, today, is_bug):
+    title = f'bugfix: {issue.title}' if is_bug else issue.title
+    f.write('\n---\n\n')
+    f.write(f'[ ] {issue.number} - {issue.title}\n')
+    f.write(f'    {labels}\n')
+    f.write(f'    {today}\n\n\n')
 
-        # Escreve em arquivos de changelog
-        changelog_paths = get_changelog_paths(customer, project)
 
-        # A primeira linha é para escrever a tarefa no CHANGELOG.
-        path = changelog_paths[0]
-        f.write(f'    echo "* {conjugated_title}. #{issue.number}" >> {path}\n')
+def write_issue_description(f, issue):
+    if issue.description:
+        f.write(f'    {issue.description}\n\n')
 
-        # A segunda linha é para escrever o comando que copiar o CHANGELOG para o Dropbox.
-        copy_path = changelog_paths[1]
-        f.write(f'    {copy_path}\n')
 
-        # Comandos de gerenciamento de tarefa
-        f.write(f"\n    cd ~/gitlab/my-tasks; sa; m start_task -p='{project}' -t={issue.number}\n")
+def write_changelog_commands(f, customer, project, issue):
+    changelog_command = get_changelog_command(customer, project.title)
+    if changelog_command:
+        f.write(f'    {changelog_command}\n')
 
-        f.write(f"    tail {path}\n")
+    changelog_paths = get_changelog_paths(project)
+    conjugated_title = conjugate_infinitive(issue.title)
 
-        # Comandos de início de tarefa específicos do projeto
-        if project == 'ekoospregao':
-            f.write(
-                f"    workon {customer}; python cli/task.py -c start -p {project} -t {issue.number} --previous_hour\n")
+    f.write(f'    echo "* {conjugated_title}. #{issue.number}" >> {changelog_paths[0]}\n')
+    f.write(f'    {changelog_paths[1]}\n')
 
-        # Git e gerenciamento de tarefa
-        f.write(f"\n    _gadd '{conjugated_title}. close #{issue.number}'; # gp\n\n")
-        f.write(f"    cd ~/gitlab/my-tasks; sa; m stop_task -p='{project}' -t={issue.number}\n")
 
-        # Comandos de término de tarefa específicos do projeto
-        if project == 'ekoospregao':
-            f.write(f"    workon {customer}; python cli/task.py -c end -p {project} -t {issue.number}\n")
+def write_task_management_commands(f, project, issue):
+    f.write(f"\n    cd ~/gitlab/my-tasks; sa; m start_task -p='{project}' -t={issue.number}\n")
+    f.write(f"    tail {get_changelog_paths(project)[0]}\n")
+
+    if project == 'ekoospregao':
+        f.write(
+            f"    workon {issue.sprint.project.customer.name}; python cli/task.py -c start -p {project} -t {issue.number} --previous_hour\n")
+
+
+def write_git_commands(f, issue):
+    conjugated_title = conjugate_infinitive(issue.title)
+    f.write(f"\n    _gadd '{conjugated_title}. close #{issue.number}'; # gp\n\n")
+    f.write(f"    cd ~/gitlab/my-tasks; sa; m stop_task -p='{issue.sprint.project.title}' -t={issue.number}\n")
+
+    if issue.sprint.project.title == 'ekoospregao':
+        f.write(
+            f"    workon {issue.sprint.project.customer.name}; python cli/task.py -c end -p {issue.sprint.project.title} -t {issue.number}\n")
 
 
 # --------------------------

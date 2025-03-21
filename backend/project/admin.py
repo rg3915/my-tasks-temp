@@ -24,6 +24,6 @@ class ProjectResource(resources.ModelResource):
 @admin.register(Project)
 class ProjectAdmin(admin.ModelAdmin):
     resource_classes = (ProjectResource,)
-    list_display = ('__str__', 'customer', 'repository_name')
+    list_display = ('__str__', 'customer', 'repository_name', 'project_folder', 'dropbox_folder')
     search_fields = ('title', 'customer__name', 'repository_name')
     list_filter = ('active', 'customer', 'repository_owner')

@@ -33,6 +33,8 @@ class Project(TimeStampedModel, Active):
         verbose_name='cliente',
         related_name='projects',
     )
+    project_folder = models.CharField(max_length=100)
+    dropbox_folder = models.CharField(max_length=100)
     repository_name = models.CharField(max_length=2, choices=REPOSITORY_NAMES, null=True, blank=True)
     repository_owner = models.ForeignKey(Owner, on_delete=models.CASCADE)
     repository_url = models.URLField(max_length=200, null=True, blank=True, help_text='Digite a url do repositório')

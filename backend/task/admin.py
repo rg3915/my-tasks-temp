@@ -29,6 +29,7 @@ class MilestoneAdmin(admin.ModelAdmin):
     resource_classes = (MilestoneResource,)
     list_display = ('__str__', 'original_id', 'project')
     search_fields = ('title',)
+    list_filter = ('project',)
 
 
 class IssueInline(admin.TabularInline):
