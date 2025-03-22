@@ -27,7 +27,8 @@ import warnings
 
 from django.core.management.base import BaseCommand
 
-from backend.core.services import create_github_issue, create_gitlab_issue, save_issue, save_task
+from backend.core.services.issue_service import create_github_issue, create_gitlab_issue, save_issue
+from backend.core.services.task_service import save_task
 from backend.project.models import Project
 from backend.task.models import Milestone
 
