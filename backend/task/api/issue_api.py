@@ -17,12 +17,10 @@ IssueSchema = create_schema(
         ('status_display', str, None),
         ('get_labels', str, None),
         ('get_project', str, None),
-    ],)
-
-IssueProjectSchema = create_schema(
-    Issue,
-    fields=('id', 'title')
+    ],
 )
+
+IssueProjectSchema = create_schema(Issue, fields=('id', 'title'))
 
 
 @router.get('issue/', response=List[IssueSchema])

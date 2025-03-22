@@ -19,11 +19,11 @@ class Payment(UuidModel, TimeStampedModel):
 
     class Meta:
         ordering = ('created',)
-        verbose_name = "Pagamento"
-        verbose_name_plural = "Pagamentos"
+        verbose_name = 'Pagamento'
+        verbose_name_plural = 'Pagamentos'
 
     def __str__(self):
-        return f"{self.number} {self.sprint}"
+        return f'{self.number} {self.sprint}'
 
     def get_spent_time_total_display(self):
         if self.spent_time_total:

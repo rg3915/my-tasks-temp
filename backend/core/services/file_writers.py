@@ -1,6 +1,5 @@
 import subprocess
 
-
 from backend.task.models import Sprint
 
 FOLDER_BASE = '/home/regis/Dropbox/projetos'

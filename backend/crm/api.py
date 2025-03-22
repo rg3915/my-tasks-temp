@@ -12,12 +12,9 @@ CustomerSchema = create_schema(Customer, depth=1)
 
 
 class CustomerSchemaIn(ModelSchema):
-
     class Config:
         model = Customer
-        model_fields = (
-            'name',
-        )
+        model_fields = ('name',)
 
 
 @router.get('customer/', response=List[CustomerSchema], tags=['Customers'])

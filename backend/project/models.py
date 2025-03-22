@@ -63,4 +63,5 @@ class Project(TimeStampedModel, Active):
 
     def get_tasks(self):
         from backend.task.models import Timesheet
+
         return Timesheet.objects.filter(task__project=self).order_by('start_time')

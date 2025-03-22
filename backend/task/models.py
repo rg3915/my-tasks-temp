@@ -20,7 +20,7 @@ class Tag(models.Model):
 
 class Label(models.Model):
     label = models.CharField(max_length=30, unique=True)
-    color = models.CharField(max_length=7, default="#FFFFFF")
+    color = models.CharField(max_length=7, default='#FFFFFF')
 
     class Meta:
         ordering = ('label',)
@@ -236,7 +236,9 @@ class Timesheet(TimeStampedModel, UuidModel):
 
     def to_dict(self):
         return {
-            'start_time': datetime_to_string(self.start_time - timedelta(hours=3), '%H:%M') if self.start_time else None,  # noqa E501
+            'start_time': datetime_to_string(self.start_time - timedelta(hours=3), '%H:%M')
+            if self.start_time
+            else None,  # noqa E501
             'end_time': datetime_to_string(self.end_time - timedelta(hours=3), '%H:%M') if self.end_time else None,  # noqa E501
-            'get_hour': str(self.get_hour()).split('.')[0]
+            'get_hour': str(self.get_hour()).split('.')[0],
         }

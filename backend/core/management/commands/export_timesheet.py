@@ -1,11 +1,12 @@
-'''
+"""
 m export_timesheet --project='my-tasks'
-'''
+"""
+
 import warnings
 
 from django.core.management.base import BaseCommand
 
-from backend.core.services import export_timesheet_service
+from backend.core.services.timesheet_service import export_timesheet_service
 from backend.project.models import Project
 
 warnings.filterwarnings('ignore')

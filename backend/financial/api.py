@@ -7,9 +7,7 @@ from .models import Payment
 
 router = Router(tags=['Financials'])
 
-PaymentSchema = create_schema(Payment, custom_fields=(
-    ('get_spent_time_total_display', str, None),
-))
+PaymentSchema = create_schema(Payment, custom_fields=(('get_spent_time_total_display', str, None),))
 
 
 class PaymentSchemaIn(ModelSchema):

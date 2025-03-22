@@ -113,7 +113,7 @@ def create_issues():
                 description=gen_phrase(),
                 milestone=choice(milestones),
                 sprint=choice(sprints),
-                status=choice(STATUS)
+                status=choice(STATUS),
             )
             obj = Issue.objects.create(**data)
 
@@ -174,7 +174,7 @@ def create_payments():
 
 
 class Command(BaseCommand):
-    help = "Create data."
+    help = 'Create data.'
 
     def handle(self, *args, **options):
         Customer.objects.all().delete()

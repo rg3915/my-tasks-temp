@@ -10,7 +10,8 @@ class PaymentForm(forms.ModelForm):
             format='%Y-%m-%d',
             attrs={
                 'type': 'date',
-            }),
+            },
+        ),
         input_formats=('%Y-%m-%d',),
     )
 

@@ -10,6 +10,7 @@ m create_new_customer \
 -p proposal-system-front \
 -m psf0.8
 """
+
 import warnings
 
 from django.core.management.base import BaseCommand
@@ -66,7 +67,7 @@ def create_sprint(project):
 
 
 class Command(BaseCommand):
-    help = "Create customer."
+    help = 'Create customer.'
 
     def add_arguments(self, parser):
         parser.add_argument('--customer', '-c', type=str, help='Type the name of customer.')

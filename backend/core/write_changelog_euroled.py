@@ -9,12 +9,12 @@ def check_if_the_date_already_exists(filename):
     with open(filename, 'r') as file:
         file_contents = file.read()
         if date_format in file_contents:
-            print("Date already exists in the file.")
+            print('Date already exists in the file.')
         else:
             # Append the date to the file
             with open(filename, 'a') as file:
-                file.write(f"\n## {date_format}\n\n")
-            print(f"Date {date_format} added to the file {filename}.")
+                file.write(f'\n## {date_format}\n\n')
+            print(f'Date {date_format} added to the file {filename}.')
 
             subprocess.run(f'tail {filename}', shell=True)
 

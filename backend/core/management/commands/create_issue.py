@@ -1,4 +1,4 @@
-'''
+"""
 https://python-gitlab.readthedocs.io/en/stable/
 https://docs.gitlab.com/ee/api/issues.html
 
@@ -21,17 +21,13 @@ m create_issue \
 --milestone='1'  # milestone.original_id
 
 Veja get_changelog_paths
-'''
+"""
+
 import warnings
 
 from django.core.management.base import BaseCommand
 
-from backend.core.services import (
-    create_github_issue,
-    create_gitlab_issue,
-    save_issue,
-    save_task
-)
+from backend.core.services import create_github_issue, create_gitlab_issue, save_issue, save_task
 from backend.project.models import Project
 from backend.task.models import Milestone
 
@@ -56,10 +52,7 @@ def create_issue(options):
     # Pega o milestone correto do projeto.
     args['milestone'] = milestone_obj
 
-    issue_creation_functions = {
-        'Github': create_github_issue,
-        'Gitlab': create_gitlab_issue
-    }
+    issue_creation_functions = {'Github': create_github_issue, 'Gitlab': create_gitlab_issue}
 
     if repository_name in issue_creation_functions:
         data = issue_creation_functions[repository_name](args)

@@ -16,7 +16,8 @@ ProjectSchema = create_schema(
     exclude=(
         'created',
         'modified',
-    ))
+    ),
+)
 
 
 class ProjectSchemaIn(ModelSchema):

@@ -4,7 +4,6 @@ from .models import Issue, Label, Milestone, Task
 
 
 class LabelForm(forms.ModelForm):
-
     class Meta:
         model = Label
         fields = '__all__'
@@ -14,7 +13,6 @@ class LabelForm(forms.ModelForm):
 
 
 class IssueForm(forms.ModelForm):
-
     class Meta:
         model = Issue
         fields = '__all__'
@@ -27,7 +25,6 @@ class IssueForm(forms.ModelForm):
 
 
 class MilestoneForm(forms.ModelForm):
-
     class Meta:
         model = Milestone
         fields = '__all__'

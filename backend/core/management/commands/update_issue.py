@@ -1,4 +1,4 @@
-'''
+"""
 https://python-gitlab.readthedocs.io/en/stable/
 https://docs.gitlab.com/ee/api/issues.html
 
@@ -21,17 +21,13 @@ m update_issue \
 --body='The quick brown fox jumps over the lazy dog.' \
 --labels='backend' \
 --milestone='1'  # milestone.original_id
-'''
+"""
+
 import warnings
 
 from django.core.management.base import BaseCommand
 
-from backend.core.services import (
-    update_github_issue,
-    update_gitlab_issue,
-    update_issue,
-    update_task
-)
+from backend.core.services import update_github_issue, update_gitlab_issue, update_issue, update_task
 from backend.project.models import Project
 from backend.task.models import Milestone
 
@@ -57,10 +53,7 @@ def update_issue_command(options):
     # Pega o milestone correto do projeto.
     args['milestone'] = milestone_obj
 
-    issue_creation_functions = {
-        'Github': update_github_issue,
-        'Gitlab': update_gitlab_issue
-    }
+    issue_creation_functions = {'Github': update_github_issue, 'Gitlab': update_gitlab_issue}
 
     if repository_name in issue_creation_functions:
         data = issue_creation_functions[repository_name](args)

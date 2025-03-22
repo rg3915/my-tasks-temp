@@ -1,13 +1,15 @@
-'''
+"""
 m start_task --project='my-tasks' --task=1
-'''
+"""
+
 import warnings
 
 from django.core.management.base import BaseCommand
 from rich import print
 from rich.console import Console
 
-from backend.core.services import create_timesheet, write_tarefas
+from backend.core.services.file_writers import write_tarefas
+from backend.core.services.timesheet_service import create_timesheet
 from backend.project.models import Project
 from backend.task.models import Task, Timesheet
 
@@ -17,19 +19,16 @@ warnings.filterwarnings('ignore')
 
 
 def start_task_command(options):
-    '''
+    """
     Return a tuple.
     timesheet_not_finalized, timesheet
-    '''
+    """
     # get project
     project = Project.objects.filter(title=options['project']).first()
 
     # A Task está diretamente relacionada com a Issue.
     # get task
-    task = Task.objects.filter(
-        project=project,
-        issue__number=options['task']
-    ).first()
+    task = Task.objects.filter(project=project, issue__number=options['task']).first()
 
     # get timesheet_not_finalized
     timesheet_not_finalized = Timesheet.objects.filter(end_time__isnull=True).first()

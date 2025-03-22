@@ -1,4 +1,4 @@
-'''
+"""
 https://python-gitlab.readthedocs.io/en/stable/
 https://docs.gitlab.com/ee/api/issues.html
 
@@ -15,17 +15,13 @@ m read_issue \
 --project='my-tasks-temp' \
 --milestone='1' \
 --assignee='rg3915'
-'''
+"""
+
 import warnings
 
 from django.core.management.base import BaseCommand
 
-from backend.core.services import (
-    read_github_issue,
-    read_gitlab_issue,
-    save_issue_multiple,
-    save_task_multiple
-)
+from backend.core.services import read_github_issue, read_gitlab_issue, save_issue_multiple, save_task_multiple
 from backend.project.models import Project
 from backend.task.models import Milestone
 
@@ -49,10 +45,7 @@ def read_issue(options):
     # Pega o milestone correto do projeto.
     args['milestone'] = milestone_obj
 
-    issue_creation_functions = {
-        'Github': read_github_issue,
-        'Gitlab': read_gitlab_issue
-    }
+    issue_creation_functions = {'Github': read_github_issue, 'Gitlab': read_gitlab_issue}
 
     if repository_name in issue_creation_functions:
         data = issue_creation_functions[repository_name](args)

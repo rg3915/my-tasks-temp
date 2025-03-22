@@ -1,18 +1,16 @@
-'''
+"""
 m stop_task --project='my-tasks' --task=1
-'''
-import subprocess
+"""
+
+# import subprocess
 import warnings
 
 from django.core.management.base import BaseCommand
 from rich import print
 from rich.console import Console
 
-from backend.core.services import (
-    remove_aqui_from_tarefas,
-    stop_timesheet,
-    write_x_on_tarefas
-)
+from backend.core.services.file_writers import remove_aqui_from_tarefas, write_x_on_tarefas
+from backend.core.services.timesheet_service import stop_timesheet
 from backend.project.models import Project
 from backend.task.models import Task
 
@@ -27,10 +25,7 @@ def stop_task_command(options) -> bool:
 
     # A Task está diretamente relacionada com a Issue.
     # get task
-    task = Task.objects.filter(
-        project=project,
-        issue__number=options['task']
-    ).first()
+    task = Task.objects.filter(project=project, issue__number=options['task']).first()
 
     # Fecha a Task
     task.status = 'cl'

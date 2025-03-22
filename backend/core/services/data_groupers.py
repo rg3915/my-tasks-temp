@@ -1,7 +1,6 @@
 from collections import defaultdict
 from datetime import timedelta
 
-
 from backend.core.utils import datetime_to_string, get_hour_display
 from backend.task.models import Timesheet
 
