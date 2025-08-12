@@ -105,10 +105,16 @@ def get_changelog_command(customer: str, project: str) -> str:
         str ou None: Comando para escrever changelog, se aplicável
     """
     changelog_commands = {
-        ('numb3rs', 'contratualizacao'): 'python ~/gitlab/my-tasks/backend/core/write_changelog.py -c numb3rs -p contratualizacao',
+        (
+            'numb3rs',
+            'contratualizacao',
+        ): 'python ~/gitlab/my-tasks/backend/core/write_changelog.py -c numb3rs -p contratualizacao',
         ('numb3rs', 'plansus'): 'python ~/gitlab/my-tasks/backend/core/write_changelog.py -c numb3rs -p plansus',
-        ('colanabola', 'colanabola'): 'python ~/gitlab/my-tasks/backend/core/write_changelog.py -c colanabola -p colanabola',
-        ('euroled', None): 'python ~/gitlab/my-tasks/backend/core/write_changelog_euroled.py',
+        (
+            'colanabola',
+            'colanabola',
+        ): 'python ~/gitlab/my-tasks/backend/core/write_changelog.py -c colanabola -p colanabola',
+        ('euroled', 'euroled'): 'python ~/gitlab/my-tasks/backend/core/write_changelog_euroled.py',
     }
 
     return changelog_commands.get((customer, project))
