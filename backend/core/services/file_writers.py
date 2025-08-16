@@ -49,7 +49,7 @@ def write_x_on_tarefas(task):
     task_text = f'{task.issue.number} - {task}'
     # print(task_text)
     escaped_task_text = task_text.replace('/', '\\/')  # Escape any slashes in the task_text
-    command = f"sed -i 's/\\[ \\] {escaped_task_text}/\\[x\\] {escaped_task_text}/' {tarefas_filename}"
+    command = f"sed -i 's/\\[ \\] {escaped_task_text}/\\[✅\\] {escaped_task_text}/' {tarefas_filename}"
     subprocess.run(command, shell=True, check=True)
 
 
